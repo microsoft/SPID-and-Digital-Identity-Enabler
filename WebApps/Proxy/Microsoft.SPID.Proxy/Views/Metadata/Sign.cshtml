@@ -1,0 +1,17 @@
+﻿@*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*@
+
+@{
+    ViewBag.Title = "Sign";
+}
+
+@using (Html.BeginForm("Sign", "Metadata", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+	<div>
+		<input type="file" name="file" />
+		<input type="submit" value="Sign" />
+	</div>
+}
+

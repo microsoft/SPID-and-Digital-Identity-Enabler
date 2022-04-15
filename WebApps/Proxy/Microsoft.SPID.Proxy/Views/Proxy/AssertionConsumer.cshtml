@@ -1,0 +1,25 @@
+﻿@*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*@
+
+@model Microsoft.SPID.Proxy.Models.FederatorResponse
+@{
+	Layout = "";
+	ViewBag.Title = "AssertionConsumer";
+}
+<html>
+<head>
+</head>
+<body onload="javascript:document.xxxForm.submit()">
+	<form action="@Model.Action" method="post" name="xxxForm">
+		<input type="hidden" name="SAMLResponse" value="@Model.SAMLResponse" />
+		<input type="hidden" name="RelayState" value="@Model.RelayState" />
+		<noscript>
+			<input type="submit" value="submit" />
+		</noscript>
+	</form>
+	<h4>SPIDProxy is redirecting you...</h4>
+</body>
+</html>
+

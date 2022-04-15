@@ -1,0 +1,27 @@
+﻿@*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*@
+
+@model AutoPostFormModel
+@{
+	Layout = null;
+}
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CNS Bridge</title>
+</head>
+<body onload="javascript:document.xxxForm.submit()">
+    <form action="@Model.ActionUrl" method="post" name="xxxForm">
+        <input type="hidden" name="SAMLResponse" value="@Model.SAMLResponse" />
+        <input type="hidden" name="RelayState" value="@Model.RelayState" />
+
+        <noscript>
+            <input type="submit" value="submit" />
+        </noscript>
+    </form>
+    <h4>Completing CNS authentication...</h4>
+</body>
+</html>

@@ -1,0 +1,746 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="{Settings:Tenant}" PolicyId="B2C_1A_TrustFrameworkExtensions" PublicPolicyUri="http://{Settings:Tenant}/B2C_1A_TrustFrameworkExtensions">
+
+  <BasePolicy>
+    <TenantId>{Settings:Tenant}</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkBase</PolicyId>
+  </BasePolicy>
+  <BuildingBlocks>
+    <ClaimsTransformations>
+      <ClaimsTransformation Id="CreateCIEIssuerUserId" TransformationMethod="FormatStringClaim">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="fiscalNumber" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="stringFormat" DataType="string" Value="CIE_{0}" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="issuerUserId" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="CreateCNSIssuerUserId" TransformationMethod="FormatStringClaim">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="fiscalNumber" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="stringFormat" DataType="string" Value="CNS_{0}" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="issuerUserId" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="RemovePrefixFromFiscalNumber" TransformationMethod="StringReplace">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="fiscalNumber" TransformationClaimType="inputClaim" />
+        </InputClaims>
+      <InputParameters>
+        <InputParameter Id="oldValue" DataType="string" Value="TINIT-" />
+        <InputParameter Id="newValue" DataType="string" Value="" />
+      </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="fiscalNumber" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+    </ClaimsTransformations>
+  </BuildingBlocks>
+
+  <ClaimsProviders>
+
+    <ClaimsProvider>
+      <DisplayName>Local Account SignIn</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="login-NonInteractive">
+          <Metadata>
+            <Item Key="client_id">{Settings:ProxyIdentityExperienceFrameworkAppId}</Item>
+            <Item Key="IdTokenAudience">{Settings:IdentityExperienceFrameworkAppId}</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="client_id" DefaultValue="{Settings:ProxyIdentityExperienceFrameworkAppId}" />
+            <InputClaim ClaimTypeReferenceId="resource_id" PartnerClaimType="resource" DefaultValue="{Settings:IdentityExperienceFrameworkAppId}" />
+          </InputClaims>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>SAML Session Management</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="SM-Saml-idp">
+          <DisplayName>Session Management Provider</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.SSO.SamlSSOSessionProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="RegisterServiceProviders">false</Item>
+          </Metadata>
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Postecom">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Aruba">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Sielte">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Infocert">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Namirial">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Intesa">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Lepida">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-TIM">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Register">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-SPIDValidator">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-DemoSPIDGov">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-DemoSPIDGovValidator">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-SPIDSamlCheck">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-CIE">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-CIETest">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-CNS">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>SPID Base</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="SPID-Base-SAML2">
+          <DisplayName>SPID Base</DisplayName>
+          <Protocol Name="SAML2" />
+          <Metadata>
+            <Item Key="WantsEncryptedAssertions">false</Item>
+            <Item Key="XmlSignatureAlgorithm">Sha256</Item>
+            <Item Key="NameIdPolicyFormat">urn:oasis:names:tc:SAML:2.0:nameid-format:transient</Item>
+            <Item Key="NameIdPolicyAllowCreate">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="SamlAssertionSigning" StorageReferenceId="B2C_1A_SigningKey" />
+            <Key Id="SamlMessageSigning" StorageReferenceId="B2C_1A_SigningKey" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="name" />
+            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="familyName" />
+            <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="email" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="spidCode" />
+            <OutputClaim ClaimTypeReferenceId="spidCode" PartnerClaimType="spidCode" />
+            <OutputClaim ClaimTypeReferenceId="placeOfBirth" PartnerClaimType="placeOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="countyOfBirth" PartnerClaimType="countyOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="dateOfBirth" PartnerClaimType="dateOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="gender" PartnerClaimType="gender" />
+            <OutputClaim ClaimTypeReferenceId="companyName" PartnerClaimType="companyName" />
+            <OutputClaim ClaimTypeReferenceId="registeredOffice" PartnerClaimType="registeredOffice" />
+            <OutputClaim ClaimTypeReferenceId="fiscalNumber" PartnerClaimType="fiscalNumber" />
+            <OutputClaim ClaimTypeReferenceId="vatNumber" PartnerClaimType="vatNumber" />
+            <OutputClaim ClaimTypeReferenceId="idCard" PartnerClaimType="idCard" />
+            <OutputClaim ClaimTypeReferenceId="mobilePhone" PartnerClaimType="mobilePhone" />
+            <OutputClaim ClaimTypeReferenceId="spidExpirationDate" PartnerClaimType="expirationDate" />
+            <OutputClaim ClaimTypeReferenceId="pec" PartnerClaimType="digitalAddress" />
+            <OutputClaim ClaimTypeReferenceId="address" PartnerClaimType="address" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateDisplayNameFromFirstNameAndLastName" />
+            <OutputClaimsTransformation ReferenceId="RemovePrefixFromFiscalNumber" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Aruba</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Aruba-SAML2">
+          <DisplayName>Aruba</DisplayName>
+          <Description>Login with your Aruba SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/aruba-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Aruba SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Aruba" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Namirial</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Namirial-SAML2">
+          <DisplayName>Namirial</DisplayName>
+          <Description>Login with your Namirial SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/namirial-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Namirial SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Namirial" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Infocert</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Infocert-SAML2">
+          <DisplayName>Infocert</DisplayName>
+          <Description>Login with your Infocert SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/infocert-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Infocert SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Infocert" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>TIM</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="TIM-SAML2">
+          <DisplayName>TIM</DisplayName>
+          <Description>Login with your TIM SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/tim-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="TIM SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-TIM" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Intesa</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Intesa-SAML2">
+          <DisplayName>Intesa</DisplayName>
+          <Description>Login with your Intesa SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/intesa-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Intesa SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Intesa" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Lepida</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Lepida-SAML2">
+          <DisplayName>Lepida</DisplayName>
+          <Description>Login with your Lepida SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/lepida-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Lepida SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Lepida" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Sielte</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Sielte-SAML2">
+          <DisplayName>Sielte</DisplayName>
+          <Description>Login with your Sielte SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/sielte-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Sielte SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Sielte" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Postecom</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Postecom-SAML2">
+          <DisplayName>Postecom</DisplayName>
+          <Description>Login with your Postecom SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/postecom-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Postecom SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Postecom" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Register</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Register-SAML2">
+          <DisplayName>Register</DisplayName>
+          <Description>Login with your Register SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/register-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Register SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Register" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>SPIDValidator</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="SPIDValidator-SAML2">
+          <DisplayName>SPIDValidator</DisplayName>
+          <Description>Login with your SPIDValidator SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/spidvalidator-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="SPIDValidator SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-SPIDValidator" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>SPID Saml Check</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="SPIDSamlCheck-SAML2">
+          <DisplayName>SPID Saml Check</DisplayName>
+          <Description>Login with your SPIDValidator SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/spidsamlcheck-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="SPIDSamlCheck SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-SPIDSamlCheck" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Demo SPID Gov</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="DemoSPIDGov-SAML2">
+          <DisplayName>Demo SPID Gov</DisplayName>
+          <Description>Login with your SPIDValidator SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/demospidgov-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="DemoSPIDGov SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-DemoSPIDGov" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="DemoSPIDGovValidator-SAML2">
+          <DisplayName>Demo SPID Gov Validator</DisplayName>
+          <Description>Login with your SPIDValidator SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/demospidgovvalidator-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="DemoSPIDGovValidator SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-DemoSPIDGovValidator" />
+        </TechnicalProfile>
+        
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    
+    <ClaimsProvider>
+      <DisplayName>CIE Base</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="CIE-Base-SAML2">
+          <DisplayName>CIE Base</DisplayName>
+          <Protocol Name="SAML2" />
+          <Metadata>
+            <Item Key="WantsEncryptedAssertions">false</Item>
+            <Item Key="XmlSignatureAlgorithm">Sha256</Item>
+            <Item Key="NameIdPolicyFormat">urn:oasis:names:tc:SAML:2.0:nameid-format:transient</Item>
+            <Item Key="NameIdPolicyAllowCreate">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="SamlAssertionSigning" StorageReferenceId="B2C_1A_SigningKey" />
+            <Key Id="SamlMessageSigning" StorageReferenceId="B2C_1A_SigningKey" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="name" />
+            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="familyName" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+            <OutputClaim ClaimTypeReferenceId="dateOfBirth" PartnerClaimType="dateOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="fiscalNumber" PartnerClaimType="fiscalNumber" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="RemovePrefixFromFiscalNumber" />
+            <OutputClaimsTransformation ReferenceId="CreateCIEIssuerUserId" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateDisplayNameFromFirstNameAndLastName" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>CIE</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="CIETest-SAML2">
+          <DisplayName>CIE Test</DisplayName>
+          <Description>Login with your test CIE</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/cietest-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE Test" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIE" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="CIE-SAML2">
+          <DisplayName>CIE</DisplayName>
+          <Description>Login with your CIE</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/cie-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIETest" />
+        </TechnicalProfile>
+
+        
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>CNS</DisplayName>
+      <TechnicalProfiles>
+
+        <TechnicalProfile Id="CNS-SAML2">
+          <DisplayName>CNS SAML2</DisplayName>
+          <Description>Login with your CNS</Description>
+          <Protocol Name="SAML2" />
+          <Metadata>
+            <Item Key="WantsEncryptedAssertions">false</Item>
+            <Item Key="WantsSignedAssertions">false</Item>
+            <Item Key="PartnerEntity">{Settings:CNSSAMLMetadata}</Item>
+            <Item Key="XmlSignatureAlgorithm">Sha256</Item>
+            <Item Key="SingleLogoutEnabled">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="SamlAssertionSigning" StorageReferenceId="B2C_1A_SigningKey" />
+            <Key Id="SamlMessageSigning" StorageReferenceId="B2C_1A_SigningKey" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="givenName" />
+            <OutputClaim ClaimTypeReferenceId="surname" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+            <OutputClaim ClaimTypeReferenceId="fiscalNumber" />
+            <OutputClaim ClaimTypeReferenceId="idCard" />
+            <OutputClaim ClaimTypeReferenceId="organization" />
+            <OutputClaim ClaimTypeReferenceId="organizationUnit" />
+            <OutputClaim ClaimTypeReferenceId="country" />
+            <OutputClaim ClaimTypeReferenceId="cnHash" />
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="assertionSubjectName" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CNS" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+          </OutputClaimsTransformations>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CNS" />
+        </TechnicalProfile>
+        
+      </TechnicalProfiles>
+    </ClaimsProvider>
+  </ClaimsProviders>
+
+  <UserJourneys>
+    <UserJourney Id="SignInSPID">
+      <OrchestrationSteps>
+
+        <OrchestrationStep Order="1" Type="ClaimsProviderSelection" ContentDefinitionReferenceId="api.idpselections">
+          <ClaimsProviderSelections>
+            <!-- <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" /> -->
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-ArubaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocertExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-LepidaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-NamirialExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-PostecomExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-RegisterExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SielteExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TIMExchange" />
+            <!-- <ClaimsProviderSelection TargetClaimsExchangeId="SpidSamlCheckExchange" /> -->
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CIE-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CNS-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovValidatorExchange" />
+          </ClaimsProviderSelections>
+          <!-- <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
+          </ClaimsExchanges> -->
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <!-- <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions> -->
+          <ClaimsExchanges>
+            <!-- <ClaimsExchange Id="SignUpWithLogonEmailExchange" TechnicalProfileReferenceId="LocalAccountSignUpWithLogonEmail" /> -->
+            <ClaimsExchange Id="SPID-PF-ArubaExchange" TechnicalProfileReferenceId="Aruba-SAML2" />
+            <ClaimsExchange Id="SPID-PF-InfocertExchange" TechnicalProfileReferenceId="Infocert-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesaExchange" TechnicalProfileReferenceId="Intesa-SAML2" />
+            <ClaimsExchange Id="SPID-PF-LepidaExchange" TechnicalProfileReferenceId="Lepida-SAML2" />
+            <ClaimsExchange Id="SPID-PF-NamirialExchange" TechnicalProfileReferenceId="Namirial-SAML2" />
+            <ClaimsExchange Id="SPID-PF-PostecomExchange" TechnicalProfileReferenceId="Postecom-SAML2" />
+            <ClaimsExchange Id="SPID-PF-RegisterExchange" TechnicalProfileReferenceId="Register-SAML2" />
+            <ClaimsExchange Id="SPID-PF-SielteExchange" TechnicalProfileReferenceId="Sielte-SAML2" />
+            <ClaimsExchange Id="SPID-PF-TIMExchange" TechnicalProfileReferenceId="TIM-SAML2" />
+            <!-- <ClaimsExchange Id="SpidSamlCheckExchange" TechnicalProfileReferenceId="SPIDSamlCheck-SAML2" /> -->
+            <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
+            <ClaimsExchange Id="CIE-TestExchange" TechnicalProfileReferenceId="CIETest-SAML2" />
+            <ClaimsExchange Id="CIE-Exchange" TechnicalProfileReferenceId="CIE-SAML2" />
+            <ClaimsExchange Id="CNS-Exchange" TechnicalProfileReferenceId="CNS-SAML2" />
+            <ClaimsExchange Id="DemoSPIDGovExchange" TechnicalProfileReferenceId="DemoSPIDGov-SAML2" />
+            <ClaimsExchange Id="DemoSPIDGovValidatorExchange" TechnicalProfileReferenceId="DemoSPIDGovValidator-SAML2" />
+                        
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- For social IDP authentication, attempt to find the user account in the directory. -->
+        <OrchestrationStep Order="3" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>authenticationSource</Value>
+              <Value>localAccountAuthentication</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadUsingAlternativeSecurityId" TechnicalProfileReferenceId="AAD-UserReadUsingAlternativeSecurityId-NoError" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Show self-asserted page only if the directory does not have the user account already (i.e. we do not have an objectId). 
+          This can only happen when authentication happened using a social IDP. If local account was created or authentication done
+          using ESTS in step 2, then an user account must exist in the directory by this time. -->
+        <!-- <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-Social" TechnicalProfileReferenceId="SelfAsserted-Social" />
+          </ClaimsExchanges>
+        </OrchestrationStep> -->
+
+        <!-- This step reads any user attributes that we may not have received when authenticating using ESTS so they can be sent 
+          in the token. -->
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>authenticationSource</Value>
+              <Value>socialIdpAuthentication</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- The previous step (SelfAsserted-Social) could have been skipped if there were no attributes to collect 
+             from the user. So, in that case, create the user in the directory if one does not already exist 
+             (verified using objectId which would be set from the last step if account was created in the directory. -->
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserWrite" TechnicalProfileReferenceId="AAD-UserWriteUsingAlternativeSecurityId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="6" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+    <UserJourney Id="SignUpOrSignInSPID">
+      <OrchestrationSteps>
+
+        <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
+          <ClaimsProviderSelections>
+            <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-ArubaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocertExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-LepidaExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-NamirialExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-PostecomExchange" />            
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-RegisterExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SielteExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TIMExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CIE-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="CNS-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovValidatorExchange" />
+          </ClaimsProviderSelections>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SignUpWithLogonEmailExchange" TechnicalProfileReferenceId="LocalAccountSignUpWithLogonEmail" />
+            <ClaimsExchange Id="SPID-PF-ArubaExchange" TechnicalProfileReferenceId="Aruba-SAML2" />
+            <ClaimsExchange Id="SPID-PF-InfocertExchange" TechnicalProfileReferenceId="Infocert-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesaExchange" TechnicalProfileReferenceId="Intesa-SAML2" />
+            <ClaimsExchange Id="SPID-PF-LepidaExchange" TechnicalProfileReferenceId="Lepida-SAML2" />
+            <ClaimsExchange Id="SPID-PF-NamirialExchange" TechnicalProfileReferenceId="Namirial-SAML2" />
+            <ClaimsExchange Id="SPID-PF-PostecomExchange" TechnicalProfileReferenceId="Postecom-SAML2" />
+            <ClaimsExchange Id="SPID-PF-RegisterExchange" TechnicalProfileReferenceId="Register-SAML2" />
+            <ClaimsExchange Id="SPID-PF-SielteExchange" TechnicalProfileReferenceId="Sielte-SAML2" />
+            <ClaimsExchange Id="SPID-PF-TIMExchange" TechnicalProfileReferenceId="TIM-SAML2" />
+            <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
+            <ClaimsExchange Id="CIE-TestExchange" TechnicalProfileReferenceId="CIETest-SAML2" />
+            <ClaimsExchange Id="CIE-Exchange" TechnicalProfileReferenceId="CIE-SAML2" />
+            <ClaimsExchange Id="CNS-Exchange" TechnicalProfileReferenceId="CNS-SAML2" />
+            <ClaimsExchange Id="DemoSPIDGovExchange" TechnicalProfileReferenceId="DemoSPIDGov-SAML2" />
+            <ClaimsExchange Id="DemoSPIDGovValidatorExchange" TechnicalProfileReferenceId="DemoSPIDGovValidator-SAML2" />
+            
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- For social IDP authentication, attempt to find the user account in the directory. -->
+        <OrchestrationStep Order="3" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>authenticationSource</Value>
+              <Value>localAccountAuthentication</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadUsingAlternativeSecurityId" TechnicalProfileReferenceId="AAD-UserReadUsingAlternativeSecurityId-NoError" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Show self-asserted page only if the directory does not have the user account already (i.e. we do not have an objectId). 
+          This can only happen when authentication happened using a social IDP. If local account was created or authentication done
+          using ESTS in step 2, then an user account must exist in the directory by this time. -->
+        <!-- <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-Social" TechnicalProfileReferenceId="SelfAsserted-Social" />
+          </ClaimsExchanges>
+        </OrchestrationStep> -->
+
+        <!-- This step reads any user attributes that we may not have received when authenticating using ESTS so they can be sent 
+          in the token. -->
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>authenticationSource</Value>
+              <Value>socialIdpAuthentication</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- The previous step (SelfAsserted-Social) could have been skipped if there were no attributes to collect 
+             from the user. So, in that case, create the user in the directory if one does not already exist 
+             (verified using objectId which would be set from the last step if account was created in the directory. -->
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserWrite" TechnicalProfileReferenceId="AAD-UserWriteUsingAlternativeSecurityId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="6" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+  </UserJourneys>
+
+</TrustFrameworkPolicy>

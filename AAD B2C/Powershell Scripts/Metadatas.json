@@ -1,0 +1,71 @@
+{
+    "metadatas": [{
+            "providername": "Aruba",
+            "providermetadata": "https://loginspid.aruba.it/metadata"
+        },
+        {
+            "providername": "Intesa",
+            "providermetadata": "https://spid.intesa.it/metadata/metadata.xml"
+        },
+        {
+            "providername": "Infocert",
+            "providermetadata": "https://identity.infocert.it/metadata/metadata.xml"
+        },
+        {
+            "providername": "Lepida",
+            "providermetadata": "https://id.lepida.it/idp/shibboleth"
+        },
+        {
+            "providername": "Namirial",
+            "providermetadata": "https://idp.namirialtsp.com/idp/metadata"
+        },
+        {
+            "providername": "Postecom",
+            "providermetadata": "https://posteid.poste.it/jod-fs/metadata/metadata.xml"
+        },
+        {
+            "providername": "Register",
+            "providermetadata": "https://spid.register.it/login/metadata"
+        },
+        {
+            "providername": "TIM",
+            "providermetadata": "https://login.id.tim.it/spid-services/MetadataBrowser/idp"
+        },
+        {
+            "providername": "Postecomlab",
+            "providermetadata": "https://spidposte.test.poste.it/jod-fs/metadata/metadata.xml"
+        },
+        {
+            "providername": "Sielte",
+            "providermetadata": "https://identity.sieltecloud.it/simplesaml/metadata.xml"
+        },
+        {
+            "providername": "SPIDValidator",
+            "providermetadata": "https://validator.spid.gov.it/metadata.xml"
+        },
+        {
+            "providername": "CIETest",
+            "providermetadata": "https://preproduzione.idserver.servizicie.interno.gov.it/idp/shibboleth?Metadata"
+        },
+        {
+            "providername": "CIE",
+            "providermetadata": "https://idserver.servizicie.interno.gov.it/idp/shibboleth?Metadata"
+        },
+        {
+            "providername": "EIDAS",
+            "providermetadata": "https://sp-proxy.eid.gov.it/spproxy/idpitmetadata"
+        },
+        {
+            "providername": "EIDASTest",
+            "providermetadata": "https://sp-proxy.pre.eid.gov.it/spproxy/idpitmetadata"
+        },
+        {
+            "providername": "DemoSPIDGov",
+            "providermetadata": "https://demo.spid.gov.it/metadata.xml"
+        },
+        {
+            "providername": "DemoSPIDGovValidator",
+            "providermetadata": "https://demo.spid.gov.it/validator/metadata.xml"
+        }
+    ]
+}

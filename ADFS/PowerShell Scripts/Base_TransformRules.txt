@@ -1,0 +1,92 @@
+@RuleTemplate = "MapClaims"
+@RuleName = "surname"
+c:[Type == "familyName"]
+=> issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+ 
+@RuleTemplate = "MapClaims"
+@RuleName = "Name"
+c:[Type == "name"]
+=> issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+  
+@RuleTemplate = "MapClaims"
+@RuleName = "SPIDCode"
+c:[Type == "spidCode"]
+=> issue(Type = "#{ClaimTypeNamespace}#/spidcode", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+ 
+@RuleName = "CodiceFiscale"
+c:[Type == "fiscalNumber"]
+=> issue(Type = "#{ClaimTypeNamespace}#/fiscalnumber", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = RegExReplace(c.Value, "[^\n]*-", ""));
+
+@RuleTemplate = "MapClaims"
+@RuleName = "gender"
+c:[Type == "gender"]
+=> issue(Type = "#{ClaimTypeNamespace}#/gender", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "dateOfBirth"
+c:[Type == "dateOfBirth"]
+=> issue(Type = "#{ClaimTypeNamespace}#/dateofbirth", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+  
+@RuleTemplate = "MapClaims"
+@RuleName = "placeOfBirth"
+c:[Type == "placeOfBirth"]
+=> issue(Type = "#{ClaimTypeNamespace}#/placeofbirth", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "countyOfBirth"
+c:[Type == "countyOfBirth"]
+=> issue(Type = "#{ClaimTypeNamespace}#/countyofbirth", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "idCard"
+c:[Type == "idCard"]
+=> issue(Type = "#{ClaimTypeNamespace}#/idcard", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+ 
+@RuleTemplate = "MapClaims"
+@RuleName = "address"
+c:[Type == "address"]
+=> issue(Type = "#{ClaimTypeNamespace}#/address", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "digitalAddress"
+c:[Type == "digitalAddress"]
+=> issue(Type = "#{ClaimTypeNamespace}#/digitaladdress", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+  
+@RuleTemplate = "MapClaims"
+@RuleName = "expirationDate"
+c:[Type == "expirationDate"]
+=> issue(Type = "#{ClaimTypeNamespace}#/expirationdate", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+ 
+@RuleTemplate = "MapClaims"
+@RuleName = "email"
+c:[Type == "email"]
+=> issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "mobilePhone"
+c:[Type == "mobilePhone"]
+=> issue(Type = "#{ClaimTypeNamespace}#/mobilephone", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "companyName"
+c:[Type == "companyName"]
+=> issue(Type = "#{ClaimTypeNamespace}#/companyname", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "registeredOffice"
+c:[Type == "registeredOffice"]
+=> issue(Type = "#{ClaimTypeNamespace}#/registeredoffice", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleTemplate = "MapClaims"
+@RuleName = "ivaCode"
+c:[Type == "ivaCode"]
+=> issue(Type = "#{ClaimTypeNamespace}#/ivacode", Issuer = c.Issuer, OriginalIssuer = c.OriginalIssuer, Value = c.Value, ValueType = c.ValueType);
+
+@RuleName = "Employee-Type"
+=> issue(Type = "#{ClaimTypeNamespace}#/spidaccount", Value = "SPID-account");
+ 
+@RuleName = "IdPIssuer"
+=> issue(Type = "#{ClaimTypeNamespace}#/spidissuer", Value = "#{IdpIssuer}#");
+
+ 
+ 

@@ -1,0 +1,66 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build and Release SPIDProxy
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - 'WebApps/Proxy/**'
+    - 'WebApps/Microsoft.SPID.Proxy.sln'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  BuildAndRelease:
+    env:
+      SOLUTION_FILE: "Microsoft.SPID.Proxy.sln"
+      PUBLISH_FOLDER: "_publish"
+      ARTIFACT_NAME: SPIDProxy
+      RELEASE_VERSION: 6.0.${{ github.run_number}}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./WebApps/Proxy
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.8.2
+        with:
+          dotnet-version: 6.0.x
+      
+      - name: restore
+        run: dotnet restore $SOLUTION_FILE
+        
+      - name: build
+        run: dotnet build --no-restore -c Release /p:Version=$RELEASE_VERSION $SOLUTION_FILE
+        
+      - name: publish
+        run: dotnet publish --no-restore -c Release -o $PUBLISH_FOLDER $SOLUTION_FILE
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+      
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.6.0
+        with:
+          path: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+      
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./release.zip
+          commit: ${{ github.sha }}
+          tag: v${{ env.RELEASE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}

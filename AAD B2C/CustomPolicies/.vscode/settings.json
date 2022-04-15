@@ -1,0 +1,8 @@
+{
+    "xml.fileAssociations": [
+        {
+          "pattern": "**.xml",
+          "systemId": "https://raw.githubusercontent.com/Azure-Samples/active-directory-b2c-custom-policy-starterpack/master/TrustFrameworkPolicy_0.3.0.0.xsd"
+        }
+      ]
+}

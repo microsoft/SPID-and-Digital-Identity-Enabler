@@ -1,0 +1,51 @@
+﻿@*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*@
+
+@{
+	ViewBag.Title = "Generate AGID metadata";
+}
+
+<h2>Generate metadata</h2>
+<p>This procedure will generate the AGID-ready metadata</p>
+<p>ADFS metadata url: @ViewBag.MetadataUrl</p>
+@using (Html.BeginForm())
+{
+	<div>
+		<label>Sign output metadata</label>
+		@Html.CheckBox("withSignature")
+	</div>
+
+	<div>
+		<label>Add Organization Tag</label>
+		@Html.CheckBox("addOrganization" ,new { @id = "orgCheck", onchange="toggleFields()" })
+	</div>
+
+	<div id="orgFields" style="display:none">
+		<label>Organization Name</label>
+		@Html.TextBox("orgName")
+		<label>Organization Display Name</label>
+		@Html.TextBox("OrgDisplayName")
+		<label>Organization Url</label>
+		@Html.TextBox("OrgUrl")
+	</div>
+
+
+
+	<button type="submit" value="Generate">Generate</button>
+}
+
+@section scripts{
+	<script type="text/javascript">
+		var orgFields = document.getElementById("orgFields");
+
+		function toggleFields() {
+			if (orgFields.style.display == "none")
+				orgFields.style.display = "block"
+			else
+				orgFields.style.display = "none"
+		}
+	</script>
+}
+
