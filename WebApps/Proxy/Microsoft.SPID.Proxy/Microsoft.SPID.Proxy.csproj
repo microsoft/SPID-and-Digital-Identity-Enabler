@@ -9,7 +9,6 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<OutputPath>bin\</OutputPath>
 		<RazorCompileOnBuild>false</RazorCompileOnBuild>
 		<RazorCompileOnPublish>false</RazorCompileOnPublish>
