@@ -21,7 +21,7 @@ jobs:
       SOLUTION_FILE: "Microsoft.SPID.Proxy.sln"
       PUBLISH_FOLDER: "_publish"
       ARTIFACT_NAME: SPIDProxy
-      RELEASE_VERSION: 6.0.${{ github.run_number}}
+      RELEASE_VERSION: 6.1.${{ github.run_number}}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     defaults:
@@ -36,15 +36,9 @@ jobs:
         uses: actions/setup-dotnet@v1.8.2
         with:
           dotnet-version: 6.0.x
-      
-      - name: restore
-        run: dotnet restore $SOLUTION_FILE
-        
-      - name: build
-        run: dotnet build --no-restore -c Release /p:Version=$RELEASE_VERSION $SOLUTION_FILE
-        
+
       - name: publish
-        run: dotnet publish --no-restore -c Release -o $PUBLISH_FOLDER $SOLUTION_FILE
+        run: dotnet publish -c Release -o $PUBLISH_FOLDER -p:Version=$RELEASE_VERSION $SOLUTION_FILE
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2.2.4
