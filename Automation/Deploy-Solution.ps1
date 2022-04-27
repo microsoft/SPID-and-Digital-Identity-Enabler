@@ -13,10 +13,11 @@ $tenantName                             = "tommasostocchioutlook"
 $tenantId                               = "9bd25ba3-e2bc-4965-986b-5062a04a550a"
 $resourceGroupName                      = "rg-testspidautomation"
 $b2cTenantName                          = "SPIDProxyTommaso"
-$deployerClientId                       = "93968ec4-dae7-4978-8eaa-18c845ec2694"
-$b2cPoliciesUploadClientId              = "eec77d14-216f-4370-92b7-e0c4379f62cf"
+$deployerClientId                       = $settings.deployerClientId
+$b2cPoliciesUploadClientId              = $settings.b2cPoliciesUploadClientId
 $b2cPoliciesUploadClientSecret          = $settings.b2cPoliciesUploadClientSecret
 $b2cFolderLocation                      = "$PSScriptRoot\..\AAD B2C\CustomPolicies"
+# These two should be inherited from above steps
 $identityExperienceFrameworkAppId       = "ee1a430a-8708-4713-bd7f-1a3feb26a2a3"
 $proxyIdentityExperienceFrameworkAppId  = "7a623a7b-6820-4f35-85e7-04eccbbbfa7f"
 
