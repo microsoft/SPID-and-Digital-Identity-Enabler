@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "ADFSAttributeConsumerServiceUrl": {
+        "value": "https://INLB2CDEV.b2clogin.com/INLB2CDEV.onmicrosoft.com/B2C_1A_TrustFrameworkBase/samlp/sso/assertionconsumer"
+      },
+      "allowedOrigin":{
+        "value": "https://inlb2cdev.b2clogin.com"
+      },
+      "CUA":{
+        "value": "TBD"
+      },
+      "SPIDL":{
+        "value": "1"
+      },
+      "UpdateAssertionConsumerServiceUrl":{
+        "value": "true"
+      },
+      "WEBSITE_LOAD_CERTIFICATES":{
+        "value": "*"
+      },
+      "ADFSEntityId":{
+        "value": "https://INLB2CDEV.b2clogin.com/INLB2CDEV.onmicrosoft.com/B2C_1A_TrustFrameworkBase"
+      },
+      "OriginalEntityId":{
+        "value": "https://INLB2CDEV.b2clogin.com/INLB2CDEV.onmicrosoft.com/B2C_1A_TrustFrameworkBase"
+      },
+      "SPIDSAMLCHECK":{
+        "value": "https://spidsamlcheck.azurewebsites.net/samlsso"
+      },
+      "SPIDSAMLCHECK_LOGOUT":{
+        "value": "https://spidsamlcheck.azurewebsites.net/samlsso"
+      },
+      "CERTNAME":{
+        "value": "TBD"
+      },
+      "CERTPASSWORD":{
+        "value": "TBD"
+      },
+      "SpidSamlCheckMetadata":{
+        "value": "https://spidsamlcheck.azurewebsites.net/metadata.xml"
+      }
+    }
+  }
