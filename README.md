@@ -21,10 +21,17 @@ Inside this repo you'll find:
  - Powershell scripts to configure ADFS to support SPID/CIE/eIDAS authentication
  - Pre-configured AAD B2C Custom Policies for supporting SPID/CIE/eIDAS/CNS authentication
  - [AgID](https://www.agid.gov.it/) compliant Custom UIs for ADFS and AAD B2C
- - (kinda old) Install documentation
 
 ## Contributing
 All the contributions are welcome. Check the open issues, create a branch and open a PR. If you notice bugs or potential improvements, don't be shy and open a new issue!
+
+## Main Contributors
+The main contributors for this repo are:
+ - Fulvio Mercoliano (fume)
+ - Tommaso Stocchi (tommasodotnet)
+ - Paolo Castaldi (paolocastaway)
+ - Pierluigi Pesce (pierfish)
+ - Alessandro Ferrillo (aferrillo)
 
 ## Trademark Notice
 
