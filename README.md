@@ -27,11 +27,11 @@ All the contributions are welcome. Check the open issues, create a branch and op
 
 ## Main Contributors
 The main contributors for this repo are:
- - Fulvio Mercoliano (fume)
- - Tommaso Stocchi (tommasodotnet)
- - Paolo Castaldi (paolocastaway)
- - Pierluigi Pesce (pierfish)
- - Alessandro Ferrillo (aferrillo)
+ - Fulvio Mercoliano ([fume](https://github.com/fume))
+ - Tommaso Stocchi ([tommasodotnet](https://github.com/tommasodotNET))
+ - Paolo Castaldi ([paolocastaway](https://github.com/paolocastaway))
+ - Pierluigi Pesce ([pierfish](https://github.com/pierfish))
+ - Alessandro Ferrillo ([aferrillo](https://github.com/aferrillo))
 
 ## Trademark Notice
 
