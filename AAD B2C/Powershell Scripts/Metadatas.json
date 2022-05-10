@@ -13,7 +13,8 @@
         },
         {
             "providername": "Lepida",
-            "providermetadata": "https://id.lepida.it/idp/shibboleth"
+            "providermetadata": "https://id.lepida.it/idp/shibboleth",
+            "supportsLegalSubject": true
         },
         {
             "providername": "Namirial",
@@ -25,7 +26,8 @@
         },
         {
             "providername": "Register",
-            "providermetadata": "https://spid.register.it/login/metadata"
+            "providermetadata": "https://spid.register.it/login/metadata",
+            "supportsLegalSubject": true
         },
         {
             "providername": "TIM",
@@ -61,11 +63,13 @@
         },
         {
             "providername": "DemoSPIDGov",
-            "providermetadata": "https://demo.spid.gov.it/metadata.xml"
+            "providermetadata": "https://demo.spid.gov.it/metadata.xml",
+            "supportsLegalSubject": true
         },
         {
             "providername": "DemoSPIDGovValidator",
-            "providermetadata": "https://demo.spid.gov.it/validator/metadata.xml"
+            "providermetadata": "https://demo.spid.gov.it/validator/metadata.xml",
+            "supportsLegalSubject": true
         }
     ]
 }
