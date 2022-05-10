@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace CNS.Auth.Web.Services
 {
+	/// <summary>
+	/// Hosted service that update trusted list  
+	/// </summary>
 	public class TrustedListUpdaterService : IHostedService, IDisposable
 	{
 		private readonly IOptionsMonitorCache<CertificateAuthenticationOptions> _certOptionsMonitor;
@@ -35,6 +38,11 @@ namespace CNS.Auth.Web.Services
 			_log = log ?? throw new ArgumentNullException(nameof(log));
 		}
 
+		/// <summary>
+		/// Start update trigger for Truste Root CA update
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
 			_log.LogInformation("StartAsync invoked: starting timer to trigger Trusted Root CAs update. The timer will trigger every {hours} hours", _cnsCertOptions.TrustedListPeriodicUpdateHours);
@@ -62,6 +70,11 @@ namespace CNS.Auth.Web.Services
 			_log.LogInformation("New CertificateAuthenticationOptions added to cache");
 		}
 
+		/// <summary>
+		/// Stop update trigger for Truste Root CA update
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public Task StopAsync(CancellationToken cancellationToken)
 		{
 			_log.LogInformation("StopAsync invoked: stopping timer.");
