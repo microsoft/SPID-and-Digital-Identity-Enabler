@@ -39,7 +39,7 @@ namespace CNS.Auth.Web.Services
 		}
 
 		/// <summary>
-		/// Start update trigger for Truste Root CA update
+		/// Starts update trigger for CNS Trusted Root CAs update
 		/// </summary>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
@@ -64,14 +64,14 @@ namespace CNS.Auth.Web.Services
 			_log.LogInformation("CertificateAuthenticationOptions removed from cache");
 
 			var newOptions = new CertificateAuthenticationOptions();
-			await _cnsCertService.GetCertificateAuthenticationOptions(newOptions);
+			await _cnsCertService.ConfigureCertificateAuthenticationOptions(newOptions);
 			_log.LogInformation("Adding the new CertificateAuthenticationOptions to cache");
 			_certOptionsMonitor.TryAdd(CertificateAuthenticationDefaults.AuthenticationScheme, newOptions);
 			_log.LogInformation("New CertificateAuthenticationOptions added to cache");
 		}
 
 		/// <summary>
-		/// Stop update trigger for Truste Root CA update
+		/// Stop update trigger for CNS Trusted Root CAs update
 		/// </summary>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>

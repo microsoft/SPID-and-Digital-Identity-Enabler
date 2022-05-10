@@ -105,7 +105,7 @@ namespace CNS.Auth.Web
 			.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
 				.AddCertificate(async options =>
 				{
-					await cnsService.GetCertificateAuthenticationOptions(options);
+					await cnsService.ConfigureCertificateAuthenticationOptions(options);
 				});
 
 			if (Env.IsProduction())

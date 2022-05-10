@@ -15,34 +15,35 @@ using System.Xml.Linq;
 namespace CNS.Auth.Web.Services
 {
 	/// <summary>
-	/// Rapresente the SAML Service for response, request and metadata
+	/// Represent the SAML Service for response, request and metadata
 	/// </summary>
 	public interface ISAMLService
 	{
+
 		/// <summary>
-		/// Create a SAML response by XML document and principal claims
+		/// Creates an XDocument representing the SAMLResponse
 		/// </summary>
-		/// <param name="SAMLRequest">Xml document object</param>
-		/// <param name="principal">Principal Claims</param>
-		/// <param name="sign">bool value for sign status</param>
+		/// <param name="SAMLRequest">The XDocument representing the incoming SAMLRequest</param>
+		/// <param name="principal">The ClaimsPrincipal to put in the SAMLResponse</param>
+		/// <param name="sign">A boolean value indicating if the SAMLResponse must be signed. Defaults to false</param>
 		/// <param name="cancellationToken">cancellation token</param>
-		/// <returns></returns>
+		/// <returns>An XDocument representing the SAMLResponse</returns>
 		Task<XDocument> CreateSAMLResponse(XDocument SAMLRequest, ClaimsPrincipal principal, bool sign = false, CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Sign SAML response 
+		/// Signs the SAMLResponse represented in the XDocument 
 		/// </summary>
-		/// <param name="SAMLResponse">XDocument document object</param>
+		/// <param name="SAMLResponse">XDocument containing a SAMLResponse to sign</param>
 		/// <param name="cancellationToken">Cancellation token</param>
-		/// <returns></returns>
+		///<returns>The XDocument representing the signed SAMLResponse</returns>
 		Task<XDocument> SignSAMLResponse(XDocument SAMLResponse, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Get decoded and inflated SAML request
 		/// </summary>
-		/// <param name="SAMLRequest">base 64 SAML request</param>
+		/// <param name="SAMLRequest">base64 encoded and deflated SAMLRequest</param>
 		/// <param name="cancellationToken">Cancellation token</param>
-		/// <returns>Parsed Xdocuent of SAML request</returns>
+		/// <returns>XDocument representing the decoded and inflated SAMLRequest</returns>
 		Task<XDocument> GetDecodedInflatedSAMLRequest(string SAMLRequest, CancellationToken cancellationToken = default);
 
 		/// <summary>

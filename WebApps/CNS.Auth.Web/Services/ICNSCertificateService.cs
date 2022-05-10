@@ -19,36 +19,35 @@ namespace CNS.Auth.Web.Services
 	/// </summary>
 	public interface ICNSCertificateService
 	{
-
 		/// <summary>
-		/// Validate certificate with thumbprint for CNS Certificate policies
+		/// Validates the provided X509Certificate2 checking if it has the required CNS certificate policies
 		/// </summary>
-		/// <param name="cert">X509 Certificate</param>
+		/// <param name="cert">The X509Certificate2 to check</param>
 		/// <param name="cancellationToken">Cancellation Token</param>
-		/// <returns>Bool value for validation</returns>
+		/// <returns>true if the X509Certificate2 has the required CNS certificate policies. false otherwise</returns>
 		Task<bool> ValidateCNSCertificate(X509Certificate2 certificate, CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Get principla Claims from certificate
+		/// Get ClaimsPrincipal represented by the X509Certificate2
 		/// </summary>
-		/// <param name="cert">X509 Certificate</param>
+		/// <param name="cert">The X509Certificate2 from which to extract the ClaimsPrincipal</param>
 		/// <param name="cancellationToken">Cancellation token</param>
-		/// <returns>Claims Principal for the specified identity </returns>
+		/// <returns>The ClaimsPrincipal represented by the X509Certificate2</returns>
 		Task<ClaimsPrincipal> GetClaimsPrincipal(X509Certificate2 certificate, CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Get trusted root CS from Trusted list file url
+		/// Get CNS trusted root CAs from Trusted list file url
 		/// </summary>
 		/// <param name="cancellationToken">Cancellation Token</param>
-		/// <returns>It Return a X509 Certificate collection</returns>
+		/// <returns>The X509Certificate2Collection representing the trusted root CAs for CNS certificates</returns>
 		Task<X509Certificate2Collection> GetTrustedCertificateCollection(CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Get certificate authentication options by CertificateAuthenticationOptions object
+		/// Configure certificate authentication options by CertificateAuthenticationOptions object
 		/// </summary>
 		/// <param name="options">Option used to configure certificate authentication</param>
 		/// <param name="cancellationToken">Cancellation Token</param>
 		/// <returns></returns>
-		Task GetCertificateAuthenticationOptions(CertificateAuthenticationOptions options, CancellationToken cancellationToken = default);
+		Task ConfigureCertificateAuthenticationOptions(CertificateAuthenticationOptions options, CancellationToken cancellationToken = default);
 	}
 }
