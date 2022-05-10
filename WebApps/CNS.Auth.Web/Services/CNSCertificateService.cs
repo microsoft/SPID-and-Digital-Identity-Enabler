@@ -21,6 +21,9 @@ using System.Xml.Linq;
 
 namespace CNS.Auth.Web.Services
 {
+	/// <summary>
+	/// Implementation of the CNS certificare service
+	/// </summary>
 	public class CNSCertificateService : ICNSCertificateService
 	{
 		private readonly ILogger<CNSCertificateService> log;
@@ -39,6 +42,12 @@ namespace CNS.Auth.Web.Services
 			this.options = options.Value;
 		}
 
+		/// <summary>
+		/// Get ClaimsPrincipal represented by the X509Certificate2
+		/// </summary>
+		/// <param name="cert">The X509Certificate2 from which to extract the ClaimsPrincipal</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		/// <returns>The ClaimsPrincipal represented by the X509Certificate2</returns>
 		public Task<ClaimsPrincipal> GetClaimsPrincipal(X509Certificate2 cert, CancellationToken cancellationToken = default)
 		{
 			log.LogInformation("Retrieving claims from certificate with thumbprint {thumbprint}", cert.Thumbprint);
@@ -80,6 +89,12 @@ namespace CNS.Auth.Web.Services
 			);
 		}
 
+		/// <summary>
+		/// Validates the provided X509Certificate2 checking if it has the required CNS certificate policies
+		/// </summary>
+		/// <param name="cert">The X509Certificate2 to check</param>
+		/// <param name="cancellationToken">Cancellation Token</param>
+		/// <returns>true if the X509Certificate2 has the required CNS certificate policies. false otherwise</returns>
 		public Task<bool> ValidateCNSCertificate(X509Certificate2 cert, CancellationToken cancellationToken = default)
 		{
 			log.LogInformation("Validating certificate with thumbprint {thumbprint} for CNS Certificate Policies", cert.Thumbprint);
@@ -119,6 +134,11 @@ namespace CNS.Auth.Web.Services
 			return Task.FromResult(true);
 		}
 
+		/// <summary>
+		/// Get CNS trusted root CAs from Trusted list file url
+		/// </summary>
+		/// <param name="cancellationToken">Cancellation Token</param>
+		/// <returns>The X509Certificate2Collection representing the trusted root CAs for CNS certificates</returns>
 		public async Task<X509Certificate2Collection> GetTrustedCertificateCollection(CancellationToken cancellationToken = default)
 		{
 			log.LogInformation("Retrieving Trusted Root CAs from {fileUrl}", options.TrustedListFileUrl);
@@ -136,10 +156,17 @@ namespace CNS.Auth.Web.Services
 				.Select(x => new X509Certificate2(Convert.FromBase64String(x.Value)));
 
 			return new X509Certificate2Collection(certificates.ToArray());
-			
+
 		}
 
-		public async Task GetCertificateAuthenticationOptions(CertificateAuthenticationOptions options,CancellationToken cancellationToken = default)
+
+		/// <summary>
+		/// Configure certificate authentication options by CertificateAuthenticationOptions object
+		/// </summary>
+		/// <param name="options">Option used to configure certificate authentication</param>
+		/// <param name="cancellationToken">Cancellation Token</param>
+		/// <returns></returns>
+		public async Task ConfigureCertificateAuthenticationOptions(CertificateAuthenticationOptions options, CancellationToken cancellationToken = default)
 		{
 			log.LogInformation("Configuring CertificateAuthenticationOptions instance");
 			options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;

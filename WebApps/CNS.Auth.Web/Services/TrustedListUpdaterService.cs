@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace CNS.Auth.Web.Services
 {
+	/// <summary>
+	/// Hosted service that update trusted list  
+	/// </summary>
 	public class TrustedListUpdaterService : IHostedService, IDisposable
 	{
 		private readonly IOptionsMonitorCache<CertificateAuthenticationOptions> _certOptionsMonitor;
@@ -35,6 +38,11 @@ namespace CNS.Auth.Web.Services
 			_log = log ?? throw new ArgumentNullException(nameof(log));
 		}
 
+		/// <summary>
+		/// Starts update trigger for CNS Trusted Root CAs update
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
 			_log.LogInformation("StartAsync invoked: starting timer to trigger Trusted Root CAs update. The timer will trigger every {hours} hours", _cnsCertOptions.TrustedListPeriodicUpdateHours);
@@ -56,12 +64,17 @@ namespace CNS.Auth.Web.Services
 			_log.LogInformation("CertificateAuthenticationOptions removed from cache");
 
 			var newOptions = new CertificateAuthenticationOptions();
-			await _cnsCertService.GetCertificateAuthenticationOptions(newOptions);
+			await _cnsCertService.ConfigureCertificateAuthenticationOptions(newOptions);
 			_log.LogInformation("Adding the new CertificateAuthenticationOptions to cache");
 			_certOptionsMonitor.TryAdd(CertificateAuthenticationDefaults.AuthenticationScheme, newOptions);
 			_log.LogInformation("New CertificateAuthenticationOptions added to cache");
 		}
 
+		/// <summary>
+		/// Stop update trigger for CNS Trusted Root CAs update
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public Task StopAsync(CancellationToken cancellationToken)
 		{
 			_log.LogInformation("StopAsync invoked: stopping timer.");

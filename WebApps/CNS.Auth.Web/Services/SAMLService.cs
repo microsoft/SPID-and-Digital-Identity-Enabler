@@ -36,7 +36,14 @@ namespace CNS.Auth.Web.Services
 			this.options = options.Value;
 		}
 
-
+		/// <summary>
+		/// Creates an XDocument representing the SAMLResponse
+		/// </summary>
+		/// <param name="SAMLRequest">The XDocument representing the incoming SAMLRequest</param>
+		/// <param name="principal">The ClaimsPrincipal to put in the SAMLResponse</param>
+		/// <param name="sign">A boolean value indicating if the SAMLResponse must be signed. Defaults to false</param>
+		/// <param name="cancellationToken">cancellation token</param>
+		/// <returns>An XDocument representing the SAMLResponse</returns>
 		public async Task<XDocument> CreateSAMLResponse(XDocument SAMLRequest, ClaimsPrincipal principal, bool sign = false, CancellationToken cancellationToken = default)
 		{
 			string inResponseTo = SAMLRequest.Root.Attribute("ID")?.Value;
@@ -77,10 +84,15 @@ namespace CNS.Auth.Web.Services
 			return samlResponse;
 		}
 
-
+		/// <summary>
+		/// Get decoded and inflated SAML request
+		/// </summary>
+		/// <param name="SAMLRequest">base64 encoded and deflated SAMLRequest</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		/// <returns>XDocument representing the decoded and inflated SAMLRequest</returns>
 		public async Task<XDocument> GetDecodedInflatedSAMLRequest(string SAMLRequest, CancellationToken cancellationToken = default)
 		{
-			
+
 			string decoded;
 			using (var input = new MemoryStream(Convert.FromBase64String(SAMLRequest)))
 			{
@@ -99,6 +111,11 @@ namespace CNS.Auth.Web.Services
 			return XDocument.Parse(decoded);
 		}
 
+		/// <summary>
+		/// Create XDocument metadata
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public async Task<XDocument> GetMetadata(CancellationToken cancellationToken = default)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -133,6 +150,12 @@ namespace CNS.Auth.Web.Services
 			return XDocument.Parse(sb.ToString());
 		}
 
+		/// <summary>
+		/// Signs the SAMLResponse represented in the XDocument 
+		/// </summary>
+		/// <param name="SAMLResponse">XDocument containing a SAMLResponse to sign</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		///<returns>The XDocument representing the signed SAMLResponse</returns>
 		public Task<XDocument> SignSAMLResponse(XDocument SAMLResponse, CancellationToken cancellationToken = default)
 		{
 			log.LogInformation("Starting signing SAMLResponse");
