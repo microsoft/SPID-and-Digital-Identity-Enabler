@@ -77,7 +77,7 @@ public static class XMLSignatureExtensions
     /// <param name="doc">The XmlDocument to be signed</param>
     /// <param name="id">The id of the topmost element in the XmlDocument</param>
     /// <param name="cert">The certificate used to sign the document</param>
-    public static SignedXml SignDocument(this XmlDocument doc, string id, X509Certificate2 cert, string digestMethod)
+    public static SignedXml SignDocument(this XmlDocument doc, string id, X509Certificate2 cert, string digestMethod, X509IncludeOption x509IncludeOption = X509IncludeOption.EndCertOnly)
     {
         var signedXml = new SignedXml(doc);
         signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
@@ -93,7 +93,7 @@ public static class XMLSignatureExtensions
 
         // Include the public key of the certificate in the assertion.
         signedXml.KeyInfo = new KeyInfo();
-        signedXml.KeyInfo.AddClause(new KeyInfoX509Data(cert, X509IncludeOption.WholeChain));
+        signedXml.KeyInfo.AddClause(new KeyInfoX509Data(cert, x509IncludeOption));
         reference.DigestMethod = digestMethod;
 
         signedXml.ComputeSignature();
