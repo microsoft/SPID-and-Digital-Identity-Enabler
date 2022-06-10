@@ -224,7 +224,7 @@ public class FederatorResponseService : IFederatorResponseService
     {
         var responseId = doc.DocumentElement.Attributes["ID"].Value;
         var cert = await _certificateService.GetProxySignCertificate();
-        var signedXml = doc.SignDocument(responseId, cert, responseDigestMethod);
+        var signedXml = doc.SignDocument(responseId, cert, responseDigestMethod, _federatorOptions.X509IncludeOption);
 
         // Append the computed signature. The signature must be placed as the sibling of the Issuer element.
         XmlNodeList nodes = doc.DocumentElement.GetElementsByTagName("Status", Saml20Constants.PROTOCOL);
@@ -235,7 +235,7 @@ public class FederatorResponseService : IFederatorResponseService
     {
         var assertionId = doc.GetElementsByTagName("Assertion", Saml20Constants.ASSERTION)[0].Attributes["ID"].Value;
         var cert = await _certificateService.GetProxySignCertificate();
-        var signedXml = doc.SignDocument(assertionId, cert, assertionDigestMethod);
+        var signedXml = doc.SignDocument(assertionId, cert, assertionDigestMethod, _federatorOptions.X509IncludeOption);
 
         // Append the computed signature. The signature must be placed as the sibling of the Issuer element.
         XmlNodeList nodes = doc.DocumentElement.GetElementsByTagName("Issuer", Saml20Constants.ASSERTION);
