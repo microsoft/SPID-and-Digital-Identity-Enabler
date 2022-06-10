@@ -9,7 +9,8 @@ param(
     [Parameter(Mandatory = $false)][string[]]$IgnoreProviders = @(),
     [switch]$DontCreateClaimDescriptions,
     [switch]$DisableAfterCreation,
-    [switch]$DontCreateAcceptanceTransformRules
+    [switch]$DontCreateAcceptanceTransformRules,
+    [Parameter(Mandatory = $true)][string]$ProxyCertificateFilePath
 )
 if ($IgnoreProviders -isnot [string[]]) {
     $exc = New-Object System.ArgumentException "IgnoreProviders must be an array of string"
@@ -26,6 +27,14 @@ if (!$DontCreateClaimDescriptions -or !$DontCreateAcceptanceTransformRules) {
         Throw $exc
     }
 }
+
+if(-not (Test-Path -Path $ProxyCertificateFilePath)){
+    $exc = New-Object System.ArgumentException "The specified Certificate file doesn't exist"
+    Throw $exc
+}
+
+$spidProxyCert=New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($ProxyCertificateFilePath)
+
 $ErrorActionPreference = "Stop"
 $json = Get-Content -Path "./Metadatas.json" -Raw | ConvertFrom-Json
 $metadatas = $json.metadatas
@@ -76,12 +85,16 @@ foreach ($m in $metadatas) {
 	
     $NewEndPoints = ($OriEndPoints | Where-Object { -not (($_.Protocol -eq 'SAMLSingleSignOn') -and ($_.Binding -eq 'Redirect')) }) + $ProxyEndPoint
     $NewEndPoints = ($NewEndPoints | Where-Object { -not (($_.Protocol -eq 'SAMLLogout') -and ($_.Binding -eq 'Redirect')) }) + $ProxyLogoutEndpoint
-	 
-    Set-AdfsClaimsProviderTrust -TargetName $idpName -SamlEndpoint $NewEndPoints
+	
+    $OriginalCerts = @(Get-AdfsClaimsProviderTrust -Name $idpName | Select-Object -ExpandProperty TokenSigningCertificates)
+    $NewCerts = $OriginalCerts + $spidProxyCert
+
+    Set-AdfsClaimsProviderTrust -TargetName $idpName -SamlEndpoint $NewEndPoints -TokenSigningCertificate $NewCerts
 	
     Write-Host "SAMLSingleSignOn Redirect Endpoint edited for $idpName : $FullProxyAddres" -ForegroundColor Green
     Write-Host "SAMLLogout Redirect Endpoint edited for $idpName : $FullProxyAddres" -ForegroundColor Green
-    
+    Write-Host "TokenSigningCertificates edited for $idpName : $NewCerts" -ForegroundColor Green
+        
     if (!$DontCreateAcceptanceTransformRules) {
         $RuleFilePath = "./Base_TransformRules.txt"
         if (test-path($RuleFilePath)) {
