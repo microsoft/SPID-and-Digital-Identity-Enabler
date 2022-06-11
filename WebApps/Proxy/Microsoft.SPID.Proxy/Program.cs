@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using Microsoft.Extensions.Logging.EventLog;
-
+this is an intentional wrong line;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
