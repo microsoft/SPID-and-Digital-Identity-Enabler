@@ -41,23 +41,22 @@ jobs:
       - name: publish
         run: dotnet publish -c Release -o $PUBLISH_FOLDER -p:Version=$RELEASE_VERSION $SOLUTION_FILE
 
-      # - name: Upload Build Artifact
-      #   uses: actions/upload-artifact@v2.2.4
-      #   with:
-      #     name: ${{ env.ARTIFACT_NAME }}
-      #     path: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
       
       - name: Zip Release
         uses: TheDoctor0/zip-release@0.6.0
         with:
-          #default working dir is ./WebApps/Proxy
-          directory: ./${{ env.PUBLISH_FOLDER }}
-          filename: ./${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
+          directory: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+          filename: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
       
-      # - name: Create Release
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     artifacts: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
-      #     commit: ${{ github.sha }}
-      #     tag: v${{ env.RELEASE_VERSION }}
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
+          commit: ${{ github.sha }}
+          tag: v${{ env.RELEASE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
