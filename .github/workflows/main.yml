@@ -56,7 +56,7 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
+          artifacts: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
           commit: ${{ github.sha }}
           tag: v${{ env.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
