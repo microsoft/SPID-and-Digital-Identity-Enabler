@@ -22,6 +22,7 @@ jobs:
       PUBLISH_FOLDER: "_publish"
       ARTIFACT_NAME: SPIDProxy
       RELEASE_VERSION: 6.1.${{ github.run_number}}
+      RELEASE_ZIP_FILENAME: "release.zip"
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     defaults:
@@ -49,12 +50,13 @@ jobs:
       - name: Zip Release
         uses: TheDoctor0/zip-release@0.6.0
         with:
-          path: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+          directory: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+          filename: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
       
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./release.zip
+          artifacts: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
           commit: ${{ github.sha }}
           tag: v${{ env.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
