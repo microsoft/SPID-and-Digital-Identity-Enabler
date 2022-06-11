@@ -50,8 +50,8 @@ jobs:
       - name: Zip Release
         uses: TheDoctor0/zip-release@0.6.0
         with:
-          directory: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
-          filename: ./WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
+          directory: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}
+          filename: ${{ github.workspace }}/WebApps/Proxy/${{ env.PUBLISH_FOLDER }}/${{ env.RELEASE_ZIP_FILENAME }}
       
       # - name: Create Release
       #   uses: ncipollo/release-action@v1
