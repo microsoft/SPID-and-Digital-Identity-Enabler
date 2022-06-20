@@ -263,5 +263,7 @@ namespace CNS.Auth.Web.Services
 		public X509Certificate2 SigningCertificate { get; set; }
 		public string ResponseIssuer { get; set; }
 		public string SSOLocation { get; set; }
+		public string SigningCertificateThumbprint { get; set; }
+		public StoreLocation StoreLocation { get; set; } = StoreLocation.CurrentUser;
 	}
 }

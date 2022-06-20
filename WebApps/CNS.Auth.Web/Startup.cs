@@ -70,21 +70,22 @@ namespace CNS.Auth.Web
 
 			services.Configure<SAMLServiceOptions>(options =>
 			{
-				var certThumbprint = Configuration["SAMLService:SigningCertificateThumbprint"];
-				using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+				Configuration.Bind("SAMLService", options);
+
+				using (X509Store certStore = new X509Store(StoreName.My, options.StoreLocation))
 				{
 					certStore.Open(OpenFlags.ReadOnly);
 
 					X509Certificate2Collection certCollection = certStore.Certificates.Find(
 												X509FindType.FindByThumbprint,
-												certThumbprint,
+												options.SigningCertificateThumbprint,
 												false);
 					// Get the first cert with the thumbprint (should be only one)
 					var signingCert = certCollection.OfType<X509Certificate2>().FirstOrDefault();
 
 					if (signingCert is null)
-						throw new Exception($"Certificate with thumbprint {certThumbprint} was not found");
-					Configuration.Bind("SAMLService", options);
+						throw new Exception($"Certificate with thumbprint {options.SigningCertificateThumbprint} was not found");
+					
 					options.SigningCertificate = signingCert;
 				}
 			});
