@@ -3,9 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Logging.EventLog;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+if (string.Equals(builder.Configuration["ASPNETCORE_FORWARDEDHEADERS_ENABLED"], "true", StringComparison.OrdinalIgnoreCase))
+{
+	ConfigureForwardedHeadersOptions();
+}
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -50,8 +58,8 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	app.UseHsts();
 }
 else
 {
@@ -66,3 +74,38 @@ app.MapControllerRoute(
 	pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 app.Run();
+
+void ConfigureForwardedHeadersOptions()
+{
+
+	builder.Services.Configure<ForwardedHeadersOptions>(options =>
+	{
+		var section = builder.Configuration.GetSection("ForwardedHeaders");
+		section.Bind(options);
+
+		var knownProxies = section.GetValue<string>("KnownProxies")?.Split(',');
+		var knownNetworks = section.GetValue<string>("KnownNetworks")?.Split(',');
+
+		if (knownProxies?.Length > 0)
+		{
+			options.KnownProxies.Clear();
+			foreach (var ip in knownProxies)
+			{
+				options.KnownProxies.Add(IPAddress.Parse(ip));
+			}
+		}
+
+		if (knownNetworks?.Length > 0)
+		{
+			options.KnownNetworks.Clear();
+			foreach (var network in knownNetworks)
+			{
+				var networkSplit = network.Split('/');
+				var prefix = networkSplit[0];
+				var prefixLength = int.Parse(networkSplit[1]);
+
+				options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse(prefix), prefixLength));
+			}
+		}
+	});
+}
