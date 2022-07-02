@@ -15,6 +15,7 @@ public class ProxyController : Controller
 	private readonly ILogAccessService _logAccessService;
 	private readonly IFederatorResponseService _federatorResponseService;
 	private readonly IFederatorRequestService _federatorRequestService;
+	private readonly ISAMLService _samlService;
 	private readonly FederatorOptions _federatorOptions;
 	private readonly TechnicalChecksOptions _technicalChecksOptions;
 
@@ -22,6 +23,7 @@ public class ProxyController : Controller
 		ILogAccessService logAccessService,
 		IFederatorResponseService federatorResponseService,
 		IFederatorRequestService federatorRequestService,
+		ISAMLService samlService,
 		IOptions<FederatorOptions> federatorOptions,
 		IOptions<TechnicalChecksOptions> technicalChecksOptions)
 	{
@@ -29,6 +31,7 @@ public class ProxyController : Controller
 		_logAccessService = logAccessService;
 		_federatorResponseService = federatorResponseService;
 		_federatorRequestService = federatorRequestService;
+		_samlService = samlService;
 		_federatorOptions = federatorOptions.Value;
 		_technicalChecksOptions = technicalChecksOptions.Value;
 	}
@@ -163,7 +166,7 @@ public class ProxyController : Controller
 				_logger.LogDebug("Removing NameQualifier from Issuer");
 				_logger.LogDebug("Setting new SubjectConfirmationData.Recipient = {newRecipient}", _federatorOptions.FederatorAttributeConsumerServiceUrl);
 				responseXml.AlterAudience(_federatorOptions.EntityId)
-					.AlterDestination(_federatorOptions.FederatorAttributeConsumerServiceUrl, HttpContext.Request.Host.ToString(), _technicalChecksOptions.SkipTechnicalChecks)
+					.AlterDestination(_federatorOptions.FederatorAttributeConsumerServiceUrl, _samlService.GetAttributeConsumerService(), _technicalChecksOptions.SkipTechnicalChecks)
 					.AlterSubjectConfirmation(_federatorOptions.FederatorAttributeConsumerServiceUrl)
 					.RemoveNameQualifierIfFormatEntity();
 
