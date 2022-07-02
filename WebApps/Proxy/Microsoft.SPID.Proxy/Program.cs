@@ -44,11 +44,14 @@ builder.Services.Configure<CertificateOptions>(options => builder.Configuration.
 builder.Services.Configure<CustomErrorOptions>(options => builder.Configuration.GetSection("customErrors").Bind(options));
 builder.Services.Configure<FederatorOptions>(options => builder.Configuration.GetSection("Federator").Bind(options));
 builder.Services.Configure<IDPMetadatasOptions>(options => builder.Configuration.GetSection("idpMetadatas").Bind(options));
-builder.Services.Configure<LogAccessOptions>(options => builder.Configuration.GetSection("LogAccess").Bind(options));
-builder.Services.Configure<LogAccessOptions>(options => options.FieldsToLog = builder.Configuration.GetValue<string>("LogAccess:FieldsToLog").Split(",").ToList());
+builder.Services.Configure<LogAccessOptions>(options => {
+	builder.Configuration.GetSection("SPIDProxyLogging:LogAccess").Bind(options);
+	options.FieldsToLog = builder.Configuration.GetValue<string>("SPIDProxyLogging:LogAccess:FieldsToLog").Split(",").ToList();
+});
 builder.Services.Configure<SPIDOptions>(options => builder.Configuration.GetSection("spid").Bind(options));
 builder.Services.Configure<TechnicalChecksOptions>(options => builder.Configuration.GetSection("TechnicalChecks").Bind(options));
 builder.Services.Configure<EventLogSettings>(options => builder.Configuration.GetSection("Logging:EventLog:Settings").Bind(options));
+builder.Services.Configure<LoggingOptions>(options => builder.Configuration.GetSection("SPIDProxyLogging").Bind(options));
 
 builder.Services
 	.AddMvc()
