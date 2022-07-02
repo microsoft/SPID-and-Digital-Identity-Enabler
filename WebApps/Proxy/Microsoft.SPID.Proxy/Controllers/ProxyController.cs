@@ -17,13 +17,15 @@ public class ProxyController : Controller
 	private readonly IFederatorRequestService _federatorRequestService;
 	private readonly FederatorOptions _federatorOptions;
 	private readonly TechnicalChecksOptions _technicalChecksOptions;
+	private readonly LoggingOptions _loggingOptions;
 
 	public ProxyController(ILogger<ProxyController> logger,
 		ILogAccessService logAccessService,
 		IFederatorResponseService federatorResponseService,
 		IFederatorRequestService federatorRequestService,
 		IOptions<FederatorOptions> federatorOptions,
-		IOptions<TechnicalChecksOptions> technicalChecksOptions)
+		IOptions<TechnicalChecksOptions> technicalChecksOptions,
+		IOptions<LoggingOptions> loggingOptions)
 	{
 		_logger = logger;
 		_logAccessService = logAccessService;
@@ -31,6 +33,7 @@ public class ProxyController : Controller
 		_federatorRequestService = federatorRequestService;
 		_federatorOptions = federatorOptions.Value;
 		_technicalChecksOptions = technicalChecksOptions.Value;
+		_loggingOptions = loggingOptions.Value;
 	}
 
 	[HttpGet]
@@ -38,10 +41,10 @@ public class ProxyController : Controller
 	public async Task<IActionResult> Index(string identityProvider)
 	{
 		_logger.LogInformation(LoggingEvents.PROXY_INDEX_INVOKED, "Proxy/Index endpoint invoked. IdentityProvider = {identityProvider}, RequestUrl = {requestUrl}", identityProvider, HttpContext.Request.GetDisplayUrl());
-		
+
 		if (string.IsNullOrWhiteSpace(identityProvider))
 		{
-			_logger.LogError(LoggingEvents.ERROR_IDENTITYPROVIDER_EMPTY,$"{nameof(identityProvider)} is null or empty. Impossible to continue processing");
+			_logger.LogError(LoggingEvents.ERROR_IDENTITYPROVIDER_EMPTY, $"{nameof(identityProvider)} is null or empty. Impossible to continue processing");
 			throw new ArgumentException("Parameter cannot be null or empty", nameof(identityProvider));
 		}
 
@@ -63,7 +66,7 @@ public class ProxyController : Controller
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(LoggingEvents.ERROR_DECODE_SAML_REQUEST,e, "Unable to decode SAMLRequest.");
+				_logger.LogError(LoggingEvents.ERROR_DECODE_SAML_REQUEST, e, "Unable to decode SAMLRequest.");
 				return BadRequest();
 			}
 
@@ -87,7 +90,7 @@ public class ProxyController : Controller
 		}
 		else
 		{
-			_logger.LogError(LoggingEvents.ERROR_NO_SAML_QUERYSTRING,"The request doesn't have SAML mandatory parameters such as SAMLRequest. Returning BadRequest");
+			_logger.LogError(LoggingEvents.ERROR_NO_SAML_QUERYSTRING, "The request doesn't have SAML mandatory parameters such as SAMLRequest. Returning BadRequest");
 			return BadRequest();
 		}
 	}
@@ -103,21 +106,22 @@ public class ProxyController : Controller
 	{
 		_logger.LogInformation(LoggingEvents.ASSERTION_CONSUMER_INVOKED, "AssertionConsumer endpoint invoked. SAMLResponse = {samlResponse}, RelayState = {relayState}", SAMLResponse, RelayState);
 
-		string inResponseTo, id, issuer;
+		string inResponseTo, id, issuer, decodedSamlResponse;
 		XmlDocument responseXml;
 
 		try
 		{
-			responseXml = SAMLResponse
-				.DecodeSamlResponse()
-				.ToXmlDocument();
+			decodedSamlResponse = SAMLResponse.DecodeSamlResponse();
+			responseXml = decodedSamlResponse.ToXmlDocument();
 
-			_logger.LogDebug("SAMLResponse decoded.");
-
+			if (_loggingOptions.LogDecodedSamlResponse)
+				_logger.LogInformation(LoggingEvents.INCOMING_SAML_RESPONSE_DECODED, "SAMLResponse decoded = {samlResponseDecoded}", decodedSamlResponse);
+			else
+				_logger.LogInformation(LoggingEvents.INCOMING_SAML_RESPONSE_DECODED, "SAMLResponse decoded.");
 		}
 		catch (Exception e)
 		{
-			_logger.LogError(LoggingEvents.ERROR_DECODE_SAML_RESPONSE,e, "An error occurred decoding the SAMLResponse");
+			_logger.LogError(LoggingEvents.ERROR_DECODE_SAML_RESPONSE, e, "An error occurred decoding the SAMLResponse");
 			throw;
 		}
 
@@ -141,7 +145,7 @@ public class ProxyController : Controller
 					{
 						UserFriendlyMessage = new HtmlString("Signature della risposta non valida o non presente, impossibile proseguire con l'autenticazione.")
 					};
-					_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_RESPONSE_SIGNATURE,"Invalid SAMLResponse Signature");
+					_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_RESPONSE_SIGNATURE, "Invalid SAMLResponse Signature");
 					return View("CourtesyPage", errorModel);
 				}
 				_logger.LogInformation(LoggingEvents.SAML_RESPONSE_SIGNATURE_VALIDATED, "SAMLResponse signature validated");
@@ -179,12 +183,12 @@ public class ProxyController : Controller
 			}
 			catch (SPIDValidationException spidEx)
 			{
-				_logger.LogError(LoggingEvents.ERROR_SAML_RESPONSE_VALIDATION_FAILED,spidEx, "SPID SAMLResponse validation failed");
+				_logger.LogError(LoggingEvents.ERROR_SAML_RESPONSE_VALIDATION_FAILED, spidEx, "SPID SAMLResponse validation failed");
 				throw;
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(LoggingEvents.ERROR_ASSERTION_CONSUMER_GENERIC_ERROR,ex, "An error occurred on the AssertionConsumer endpoint.");
+				_logger.LogError(LoggingEvents.ERROR_ASSERTION_CONSUMER_GENERIC_ERROR, ex, "An error occurred on the AssertionConsumer endpoint.");
 				throw;
 			}
 		}
