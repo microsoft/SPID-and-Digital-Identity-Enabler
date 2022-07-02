@@ -18,6 +18,7 @@ namespace Microsoft.SPID.Proxy.Models.Options
 
 			var knownProxies = section.GetValue<string>("KnownProxies")?.Split(',');
 			var knownNetworks = section.GetValue<string>("KnownNetworks")?.Split(',');
+			var allowedHosts = section.GetValue<string>("AllowedHosts")?.Split(',');
 
 			if (knownProxies?.Length > 0)
 			{
@@ -39,6 +40,12 @@ namespace Microsoft.SPID.Proxy.Models.Options
 
 					options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse(prefix), prefixLength));
 				}
+			}
+
+			if(allowedHosts?.Length > 0)
+			{
+				options.AllowedHosts.Clear();
+				options.AllowedHosts = allowedHosts;
 			}
 		}
 	}
