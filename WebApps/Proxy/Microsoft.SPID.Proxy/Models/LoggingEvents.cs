@@ -15,6 +15,8 @@ namespace Microsoft.SPID.Proxy.Models
 		public const int OUTGOING_SAML_REQUEST_CREATED = 5004;
 		public const int USER_LOGGED_IN = 5005;
 		public const int PROXY_INDEX_INVOKED = 5006;
+		public const int INCOMING_SAML_RESPONSE_DECODED = 5007;
+
 
 		//Errors
 		public const int ERROR_IDENTITYPROVIDER_EMPTY = 9000;
