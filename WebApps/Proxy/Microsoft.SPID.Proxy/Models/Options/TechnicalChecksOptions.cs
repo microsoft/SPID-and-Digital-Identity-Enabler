@@ -9,4 +9,6 @@ public class TechnicalChecksOptions
 {
     public bool SkipTechnicalChecks { get; set; }
     public bool SkipAssertionSignatureValidation { get; set; }
+	public bool SkipSignaturesValidation { get; set; }
+
 }
