@@ -43,18 +43,18 @@ public static class ResponseSAMLAsXMLExtensions
 	}
 
 	public static XmlDocument AlterDestination(this XmlDocument samlResponse,
-		string attributeConsumerServiceUrl,
-		string baseHost,
+		string federatorAttributeConsumerServiceUrl,
+		string spidProxyAttributeConsumerEndpoint,
 		bool skipTechnicalChecks)
 	{
 		var root = samlResponse.DocumentElement;
 		if (!root.HasAttribute("Destination") || string.IsNullOrWhiteSpace(root.GetAttribute("Destination")))
 			throw new SPIDValidationException("missing Destination");
 		var destValue = root.GetAttribute("Destination");
-		if (destValue != $"https://{baseHost}/proxy/assertionconsumer" && !skipTechnicalChecks)
+		if (destValue != spidProxyAttributeConsumerEndpoint && !skipTechnicalChecks)
 			throw new SPIDValidationException("different Destination");
 
-		var newDestination = attributeConsumerServiceUrl;
+		var newDestination = federatorAttributeConsumerServiceUrl;
 		root.SetAttribute("Destination", newDestination);
 
 		return samlResponse;

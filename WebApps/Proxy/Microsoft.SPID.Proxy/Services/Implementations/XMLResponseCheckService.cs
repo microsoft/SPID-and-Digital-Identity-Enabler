@@ -9,15 +9,19 @@ public class XMLResponseCheckService : IXMLResponseCheckService
 {
     private static readonly string[] cieIssuers = new string[] { "https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/POST/SSO", "https://preproduzione.idserver.servizicie.interno.gov.it/idp/profile/SAML2/POST/SSO" };
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ISAMLService _samlService;
+
     private readonly SPIDOptions _spidOptions;
     private readonly FederatorOptions _federatorOptions;
 
     public XMLResponseCheckService(IHttpContextAccessor httpContextAccessor,
+        ISAMLService samlService,
         IOptions<SPIDOptions> spidOptions,
         IOptions<FederatorOptions> federatorOptions)
     {
         _httpContextAccessor = httpContextAccessor;
-        _spidOptions = spidOptions.Value;
+		_samlService = samlService;
+		_spidOptions = spidOptions.Value;
         _federatorOptions = federatorOptions.Value;
     }
 
@@ -174,7 +178,7 @@ public class XMLResponseCheckService : IXMLResponseCheckService
         if (recipient == null)
             return;
 
-        if (recipient != $"https://{_httpContextAccessor.HttpContext.Request.Host}/proxy/assertionconsumer")
+        if (recipient != _samlService.GetAttributeConsumerService())
             throw new SPIDValidationException("SubjectConfirmationData Recipient must be equal to AssertionConsumerServiceUrl");
 
         var inResponseTo = SubjectConfirmationData.Attributes["InResponseTo"];
