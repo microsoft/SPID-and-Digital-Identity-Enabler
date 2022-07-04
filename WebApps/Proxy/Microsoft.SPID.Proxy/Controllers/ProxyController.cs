@@ -141,17 +141,20 @@ public class ProxyController : Controller
 			try
 			{
 				SPIDErrorModel errorModel;
-
-				if (!await _federatorResponseService.CheckSignature(responseXml))
+				if (!_technicalChecksOptions.SkipSignaturesValidation)
 				{
-					errorModel = new SPIDErrorModel()
+					if (!await _federatorResponseService.CheckSignature(responseXml))
 					{
-						UserFriendlyMessage = new HtmlString("Signature della risposta non valida o non presente, impossibile proseguire con l'autenticazione.")
-					};
-					_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_RESPONSE_SIGNATURE, "Invalid SAMLResponse Signature");
-					return View("CourtesyPage", errorModel);
+						errorModel = new SPIDErrorModel()
+						{
+							UserFriendlyMessage = new HtmlString("Signature della risposta non valida o non presente, impossibile proseguire con l'autenticazione.")
+						};
+						_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_RESPONSE_SIGNATURE, "Invalid SAMLResponse Signature");
+						return View("CourtesyPage", errorModel);
+					}
+					_logger.LogInformation(LoggingEvents.SAML_RESPONSE_SIGNATURE_VALIDATED, "SAMLResponse signature validated");
 				}
-				_logger.LogInformation(LoggingEvents.SAML_RESPONSE_SIGNATURE_VALIDATED, "SAMLResponse signature validated");
+
 				responseXml.RemoveSignatures();
 				_logger.LogDebug("Removed original Signature(s)");
 
