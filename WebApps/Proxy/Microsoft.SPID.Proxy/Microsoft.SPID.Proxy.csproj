@@ -16,6 +16,8 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
+		<PackageReference Include="Azure.Identity" Version="1.6.0" />
 		<PackageReference Include="bootstrap" Version="5.1.2" />
 		<PackageReference Include="jQuery" Version="3.6.0" />
 		<PackageReference Include="jQuery.Validation" Version="1.19.3" />
@@ -39,5 +41,8 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Security.Cryptography.Cng" Version="5.0.0" />
 		<PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="SigningCert\" />
 	</ItemGroup>
 </Project>

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging.EventLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddKeyVaultConfigurationProvider();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 
