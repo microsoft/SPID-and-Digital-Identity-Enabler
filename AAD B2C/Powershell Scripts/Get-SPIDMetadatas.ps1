@@ -30,8 +30,11 @@ if([string]::IsNullOrWhiteSpace($certificateFilePath)){
     $certificateFilePath = $f.FullName
 }
 
-$cert = (New-Object System.IO.StreamReader($certificateFilePath)).ReadToEnd()
-# Write-Verbose $cert
+# $cert = (New-Object System.IO.StreamReader($certificateFilePath)).ReadToEnd()
+$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $certificateFilePath
+$certBase64 = [System.Convert]::ToBase64String($cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert))
+
+# Write-Verbose $certBase64
 
 if(!(Test-Path $metadataFolder)){
     New-Item -ItemType Directory $metadataFolder | Out-Null
@@ -89,7 +92,7 @@ foreach ($m in $metadatas) {
             $x509Data = $ki.AppendChild($xml.CreateElement('ds:X509Data', 'http://www.w3.org/2000/09/xmldsig#'))
             $x509Cert = $x509Data.AppendChild($xml.CreateElement('ds:X509Certificate', 'http://www.w3.org/2000/09/xmldsig#'))
             # $x509Cert.AppendChild($xml.CreateTextNode($cert)) | Out-Null
-            $x509Cert.InnerText = $cert
+            $x509Cert.InnerText = $certBase64
         
             $KeyDescriptors = $IDPSSODescriptor.SelectNodes('md:KeyDescriptor', $nsmgr)
             if($null -ne $KeyDescriptors){
