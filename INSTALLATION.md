@@ -2,10 +2,7 @@
 Questa guida vuole essere un supporto per gli utenti che hanno necessità di configurare e installare la soluzione SPID proxy.
 
 ## Prerequisites
-
-- An Azure subscription. If you don't have one, create a [free account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F) before you begin.
-
-- An Azure account that's been assigned at least the [Contributor](../role-based-access-control/built-in-roles.md) role within the subscription or a resource group within the subscription is required. 
+- Una sottoscrizione Azure. Se non è presente crearne una [free account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F) before you begin.
 
 - Installare all'interno di visual studio code l'estensione per Azure AD B2C [B2C-vscode] (https://github.com/azure-ad-b2c/vscode-extension)
   
