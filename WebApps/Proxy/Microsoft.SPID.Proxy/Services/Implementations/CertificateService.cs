@@ -92,7 +92,7 @@ public class CertificateService : ICertificateService
                 {
                     _logger.LogDebug($"Loading certificate from KeyVault: {keyVaultName}");
                     var certBase64 = _configuration.GetValue<string>(_certificateOptions.CertName);
-                    cert = new X509Certificate2(Convert.FromBase64String(certBase64));
+                    cert = new X509Certificate2(Convert.FromBase64String(certBase64), (string)null, X509KeyStorageFlags.UserKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                 }
                 else
                 {
