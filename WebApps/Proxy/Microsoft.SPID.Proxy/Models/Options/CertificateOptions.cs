@@ -7,6 +7,7 @@ namespace Microsoft.SPID.Proxy.Models.Options;
 
 public class CertificateOptions
 {
+    public string KeyVaultName { get; set; }
     public CertificateLocation CertLocation { get; set; }
     /// <summary>
     /// If the CertLocation is ServerRelativeStorage, define the filename in the server relative file folder SigningCert

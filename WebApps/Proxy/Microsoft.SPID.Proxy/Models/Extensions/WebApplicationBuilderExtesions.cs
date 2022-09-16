@@ -6,10 +6,10 @@ namespace Microsoft.SPID.Proxy.Models.Extensions
     {
         public static WebApplicationBuilder AddKeyVaultConfigurationProvider(this WebApplicationBuilder builder)
         {
-            if (!string.IsNullOrEmpty(builder.Configuration["KeyVaultName"]))
+            if (!string.IsNullOrWhiteSpace(builder.Configuration["Certificate:KeyVaultName"]))
             {
                 builder.Configuration.AddAzureKeyVault(
-                new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+                new Uri($"https://{builder.Configuration["Certificate:KeyVaultName"]}.vault.azure.net/"),
                 new DefaultAzureCredential());
             }
 

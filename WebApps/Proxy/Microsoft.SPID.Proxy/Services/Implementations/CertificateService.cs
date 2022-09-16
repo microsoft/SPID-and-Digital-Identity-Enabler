@@ -87,7 +87,7 @@ public class CertificateService : ICertificateService
                     X509KeyStorageFlags.Exportable);
                 break;
             case CertificateLocation.KeyVault:
-                var keyVaultName = _configuration.GetValue<string>("KeyVaultName");
+                var keyVaultName = _certificateOptions.KeyVaultName;
                 if (!string.IsNullOrEmpty(keyVaultName))
                 {
                     _logger.LogDebug($"Loading certificate from KeyVault: {keyVaultName}");
