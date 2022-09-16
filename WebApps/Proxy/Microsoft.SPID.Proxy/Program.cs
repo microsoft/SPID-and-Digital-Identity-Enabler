@@ -3,9 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Logging.EventLog;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddKeyVaultConfigurationProvider();
+
+if (string.Equals(builder.Configuration["ASPNETCORE_FORWARDEDHEADERS_ENABLED"], "true", StringComparison.OrdinalIgnoreCase))
+{
+	builder.Services.AddTransient<IConfigureOptions<ForwardedHeadersOptions>, ConfigureForwardedHeadersOptions>();
+}
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -53,8 +61,8 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	app.UseHsts();
 }
 else
 {

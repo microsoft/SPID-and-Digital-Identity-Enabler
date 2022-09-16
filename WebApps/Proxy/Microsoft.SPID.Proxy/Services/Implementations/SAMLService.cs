@@ -31,7 +31,7 @@ public class SAMLService : ISAMLService
 
     public string GetAttributeConsumerService()
     {
-        return $"https://{_httpContextAccessor.HttpContext.Request.Host}/proxy/assertionconsumer";
+        return $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}/proxy/assertionconsumer";
 
     }
 
