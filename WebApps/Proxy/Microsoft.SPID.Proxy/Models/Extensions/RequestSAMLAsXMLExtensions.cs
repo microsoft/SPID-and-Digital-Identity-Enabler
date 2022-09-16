@@ -172,7 +172,9 @@ public static class RequestSAMLAsXMLExtensions
 			Purpose.InnerText = purposeValue;
 
 			Extensions.AppendChild(Purpose);
-			rootEl.AppendChild(Extensions);
+			var issuer = samlRequest.GetElementsByTagName("Issuer", "*")[0];
+
+			rootEl.InsertAfter(Extensions,issuer);
 		}
 
 		return samlRequest;
