@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.EventLog;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.AddKeyVaultConfigurationProvider();
 
 if (string.Equals(builder.Configuration["ASPNETCORE_FORWARDEDHEADERS_ENABLED"], "true", StringComparison.OrdinalIgnoreCase))
 {
