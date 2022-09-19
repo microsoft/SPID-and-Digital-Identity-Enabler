@@ -66,6 +66,10 @@
         {
             "providername": "DemoSPIDGovValidator",
             "providermetadata": "https://demo.spid.gov.it/validator/metadata.xml"
+        },
+        {
+            "providername": "TeamSystem",
+            "providermetadata": "https://spid.teamsystem.com/idp"
         }
     ]
 }
