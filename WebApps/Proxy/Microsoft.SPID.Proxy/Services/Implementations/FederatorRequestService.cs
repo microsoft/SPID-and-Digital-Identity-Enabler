@@ -87,7 +87,7 @@ public class FederatorRequestService : IFederatorRequestService
                 rootEl.SetAttribute("Destination", idenityProviderUrl);
                 rootEl.RemoveAttribute("Consent");
 
-				string entityId = federatorRequest.IsCIE() ? _federatorOptions.CIEEntityId : _federatorOptions.SPIDEntityId;
+				string entityId = GetNewEntityId(federatorRequest);
 				requestAsXml.ChangeIssuer(entityId);
             }
             return requestAsXml;
@@ -140,8 +140,7 @@ public class FederatorRequestService : IFederatorRequestService
             rootEl.SetAttribute("Destination", idenityProviderUrl);
             rootEl.RemoveAttribute("Consent");
             rootEl.RemoveAttribute("IsPassive");
-
-            string entityId = federatorRequest.IsCIE() ? _federatorOptions.CIEEntityId : _federatorOptions.SPIDEntityId;
+            string entityId = GetNewEntityId(federatorRequest);
             requestAsXml.ChangeIssuer(entityId);
 
             var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString);
@@ -182,5 +181,10 @@ public class FederatorRequestService : IFederatorRequestService
             _logger.LogError(ex,"Something went wrong transforming the incoming SAML Xml into the desired outgoing SAML Xml");
             throw;
         }
+    }
+
+    private string GetNewEntityId(FederatorRequest federatorRequest)
+    {
+        return federatorRequest.IsCIE() ? _federatorOptions.CIEEntityId : _federatorOptions.SPIDEntityId;
     }
 }
