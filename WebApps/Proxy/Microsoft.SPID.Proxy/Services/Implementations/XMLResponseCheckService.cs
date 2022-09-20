@@ -160,7 +160,7 @@ public class XMLResponseCheckService : IXMLResponseCheckService
         if (audience == null || string.IsNullOrWhiteSpace(audience.InnerText))
             throw new SPIDValidationException("Audience not specified");
 
-        if (audience.InnerText != _federatorOptions.SPIDEntityId)
+        if (audience.InnerText != _federatorOptions.SPIDEntityId && audience.InnerText != _federatorOptions.CIEEntityId)
             throw new SPIDValidationException("Audience is different from SP EntityID");
     }
 
