@@ -9,7 +9,7 @@ namespace Microsoft.SPID.Proxy.Models.Extensions;
 
 public static class RequestSAMLAsXMLExtensions
 {
-    public static XmlDocument ChangeIssuer(this XmlDocument samlRequest, string spidEntityId)
+    public static XmlDocument ChangeIssuer(this XmlDocument samlRequest, string newEntityId)
     {
 		XmlElement rootEl = samlRequest.DocumentElement;
 		XmlNodeList IssuerTags = rootEl.GetElementsByTagName("Issuer", "*");
@@ -22,9 +22,9 @@ public static class RequestSAMLAsXMLExtensions
 			FormatAttribute.Value = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
 			IssuerTag.Attributes.Append(FormatAttribute);
 			XmlAttribute nameQualifier = samlRequest.CreateAttribute("NameQualifier");
-			nameQualifier.Value = spidEntityId;
+			nameQualifier.Value = newEntityId;
 			IssuerTag.Attributes.Append(nameQualifier);
-			IssuerTag.InnerText = spidEntityId;
+			IssuerTag.InnerText = newEntityId;
 		}
 
 		return samlRequest;

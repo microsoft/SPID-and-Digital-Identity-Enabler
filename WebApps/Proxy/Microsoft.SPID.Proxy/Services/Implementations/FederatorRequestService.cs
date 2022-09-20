@@ -87,7 +87,8 @@ public class FederatorRequestService : IFederatorRequestService
                 rootEl.SetAttribute("Destination", idenityProviderUrl);
                 rootEl.RemoveAttribute("Consent");
 
-                requestAsXml.ChangeIssuer(_federatorOptions.SPIDEntityId);
+				string entityId = GetNewEntityId(federatorRequest);
+				requestAsXml.ChangeIssuer(entityId);
             }
             return requestAsXml;
         }
@@ -139,8 +140,8 @@ public class FederatorRequestService : IFederatorRequestService
             rootEl.SetAttribute("Destination", idenityProviderUrl);
             rootEl.RemoveAttribute("Consent");
             rootEl.RemoveAttribute("IsPassive");
-
-            requestAsXml.ChangeIssuer(_federatorOptions.SPIDEntityId);
+            string entityId = GetNewEntityId(federatorRequest);
+            requestAsXml.ChangeIssuer(entityId);
 
             var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString);
             //If no RequestedAuthnContext is already present, add it
@@ -180,5 +181,10 @@ public class FederatorRequestService : IFederatorRequestService
             _logger.LogError(ex,"Something went wrong transforming the incoming SAML Xml into the desired outgoing SAML Xml");
             throw;
         }
+    }
+
+    private string GetNewEntityId(FederatorRequest federatorRequest)
+    {
+        return federatorRequest.IsCIE() ? _federatorOptions.CIEEntityId : _federatorOptions.SPIDEntityId;
     }
 }
