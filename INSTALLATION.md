@@ -1,23 +1,27 @@
 # SPID Proxy Installation Steps
-Questa guida vuole essere un supporto per gli utenti che hanno necessità di configurare e installare la soluzione SPID proxy.
+Questa guida vuole essere un supporto per tutti gli utenti che hanno necessità di configurare e installare la soluzione SPID proxy funzionante.
 
 ## Prerequisites
-- Una sottoscrizione Azure. Se non è presente crearne una [free account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F) before you begin.
+- Una sottoscrizione Azure. Se non è presente crearne una [free account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F) prima di iniziare.
 
-- Installare all'interno di visual studio code l'estensione per Azure AD B2C [B2Cvscode] (https://github.com/azure-ad-b2c/vscode-extension)
+
+## Addons
+- Installare all'interno di visual studio code l'estensione [B2Cvscode](https://github.com/azure-ad-b2c/vscode-extension) utile per lavorare con Azure AD B2C.
   
 
-## Creazione delle risorse  
-1. Creazione di un tenant Azure AD B2C
-2. Creazione un App Service per l'installazione dello SPID Proxy
-3. Creazione di uno storage account su cui andranno caricati i file della UI custom e i metadati necessari per la configurazione di Azure AD B2C
+## Creazione delle risorse
+Come prima cosa è necessario creare le risorse utili per poter pubblicare SPID Proxy. Le azioni da fare sono le seguenti:  
+- Creare un tenant Azure AD B2C all'interno del portale seguendo la seguente esercitazione: [Esercitazione: Creare un tenant di Azure Active Directory B2C](https://learn.microsoft.com/it-it/azure/active-directory-b2c/tutorial-create-tenant)
+- Creare un App Service per l'installazione dello SPID Proxy seguendo la seguente quickstart: [Quickstart: Deploy an ASP.NET web app](https://learn.microsoft.com/en-in/azure/app-service/quickstart-dotnetcore?tabs=net60&pivots=development-environment-azure-portal)
+- Creare uno storage account, che servirà per avere un posto dove caricare i file della UI Custom e i metadati necessari per la configurazione di Azure AD B2C. Per dubbi segui questo articolo: [Create Storage Account](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) 
 
 ## Configurazioni
-1. Configurazione Identity experience framework
+### Configurazione Identity experience framework
 Per poter utilizzare le custom policy all'interno di Azure AD B2C è necessario creare e configurare le Key, come indicato nel seguente indirizzo [CreateUserFlowAndCustomPolicy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy#add-signing-and-encryption-keys-for-identity-experience-framework-applications). 
 E' disponibile anche il seguente tool per aiutare l'utente nella configurazione iniziale di Azure AD B2C [b2ciefsetupapp] (https://b2ciefsetupapp.azurewebsites.net/). Andando a indicare il nnome del tenant, il tool crea automaticamente le applicazioni e carica automaticamente le policy dello starte pack all'interno del tenant.
 
-2. Modifica degli id e delle informazioni all'interno dell'appsettings delle custom policies. Le informazioni da inserire sono:   
+### Modifica degli id e delle informazioni all'interno dell'appsettings delle custom policies. 
+Le informazioni da inserire sono:   
    1. Modificare il Name e il Tenant
    2. Modificare IdentityExperienceFrameworkAppId
    3. Modificare ProxyIdentityExperienceFrameworkAppId
