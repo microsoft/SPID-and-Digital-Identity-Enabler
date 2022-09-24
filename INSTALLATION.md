@@ -17,8 +17,11 @@ Come prima cosa è necessario creare le risorse utili per poter pubblicare SPID 
 
 ## Configurazioni
 ### Configurazione Identity experience framework
-Per poter utilizzare le custom policy all'interno di Azure AD B2C è necessario creare e configurare le Key, come indicato nel seguente indirizzo [CreateUserFlowAndCustomPolicy](https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy#add-signing-and-encryption-keys-for-identity-experience-framework-applications). 
-E' disponibile anche il seguente tool per aiutare l'utente nella configurazione iniziale di Azure AD B2C [b2ciefsetupapp] (https://b2ciefsetupapp.azurewebsites.net/). Andando a indicare il nnome del tenant, il tool crea automaticamente le applicazioni e carica automaticamente le policy dello starte pack all'interno del tenant.
+Le custom policy sono file di configurazione che definiscono il comportamento del tenant di Azure Active Directory B2C (Azure AD B2C). Le custom policy possono essere completamente modificate per configurare e personalizzare molte attività di diverso tipo. 
+
+Per poter utilizzare le custom policy è necessario creare le signing and encryption keys all'interno di Azure AD B2C come indicato nel seguente articolo: [Creazione signing and encryption keys](https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy#add-signing-and-encryption-keys-for-identity-experience-framework-applications). 
+Nel caso si voglia automatizzare il processo di configurazione di Identity Experience Framework è disponibile il seguente tool [B2C Identity Experience Framework setup](https://b2ciefsetupapp.azurewebsites.net/). 
+
 
 ### Modifica degli id e delle informazioni all'interno dell'appsettings delle custom policies. 
 Le informazioni da inserire sono:   
