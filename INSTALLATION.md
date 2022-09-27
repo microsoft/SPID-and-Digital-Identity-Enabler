@@ -106,8 +106,27 @@ Dopo che le chiavi sono state generate correttamente, bisognerà unirle tramite 
 ```bash
 openssl pkcs12 -export -out outputfile.pfx -inkey key.pem -in crt.pem
 ```
-Il pfx sarà da caricare all'interno dello spidproxy, mentre il crt.pem ci servirà per generare i metadata modificati degli IDP di SPID. E' presente uno [script powershell](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/Powershell%20Scripts/Get-SPIDMetadatas.ps1) che ci aiuta in questo processo.
+Il pfx sarà da caricare all'interno dello spidproxy, mentre il crt.pem servirà per generare i metadata modificati degli IDP di SPID. E' presente uno [script powershell](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/Powershell%20Scripts/Get-SPIDMetadatas.ps1) che aiuta in questo processo.
 Si dovrà copiare il crt.pem in formato stringa senza header e footer all'interno della folder con lo script powershell successivamente si eseguirà lo script, indicando anche l'url dello spid proxy all'interno del file
 ```powershell
-Get-SPIDMetadatas.ps1 -SPIDProxyBaseUrl "url-spid-proxy" -additionalSPIDProxyBaseUrl "SPIDProxy parallelo per persone giuridiche"  -certificateFilePath "path del certificato"
+Get-SPIDMetadatas.ps1 -SPIDProxyBaseUrl "url-spid-proxy" -additionalSPIDProxyBaseUrl "SPIDProxy parallelo per persone giuridiche (opzionale)"  -certificateFilePath "path del certificato"
 ```
+Lo script copierà i metadata originali modificandoli con i parametri che sono stati inseriti nella linea di comando. I file saranno cosi pronti da caricare sullo storage account. La folder dove inserli è "metadatas".
+
+## Pubblicazione dello SPID Proxy
+L'ultimo passo da seguire è la pubblicazione dello SPID Proxy. Bisognerà scaricare dalle release lo .zip di SpidProxy. Accedere all'app service e tramite Kudu utilizzare la funzione Zip push deploy per caricare lo zip della release. 
+Creare la folder SigninCert dentro la root dello spid proxy e caricare il pfx generato precedentemente.
+Il deploy ora è terminato.
+
+## Configurazione SPIDProxy
+Dopo aver ultimato il deploy rimane solamente da configurare l'applicazione nei suoi parametri di configurazione. 
+All'interno del portale, nella pagina di configurazione di App Service bisognerà andare ad aggiungere dei parametri di configurazione che sono:
+- Certificate__CertName come indicato alla riga [38](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/WebApps/Proxy/Microsoft.SPID.Proxy/appsettings.json#L38)
+- Certificate__CertPassword come indicato alla riga [39](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/WebApps/Proxy/Microsoft.SPID.Proxy/appsettings.json#L39)
+
+Successivamente la sezione che va modificata è a riga [41](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/WebApps/Proxy/Microsoft.SPID.Proxy/appsettings.json#L41) nello specifico:
+- **Federator__EntityId**: entity id di Azure B2C.
+- **Federator__SPIDEntityId**: entity id scritto nel metadata che verrà inviato a AGID.
+- **Federator__FederatorAttributeConsumerServiceUrl**: Url dove bisogna mandare le risposte dallo SPIDProxy verso Azure B2C.
+Non è necessario modificare altre configurazioni.
+
