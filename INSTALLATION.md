@@ -66,20 +66,48 @@ Successivamente bisognerà accedere al tenant B2C e caricare il certificato gene
 Arrivati a questo punto sarà necessario caricare le custom policy su tenant Azure B2C.
 
 ### Caricamento della UI Custom Storage Account ###
-**L'utilizzo dello storage account non è una prerogrativa, anzi come già indicato precedentemente nella guida, i file della UI e le policy possono essere posizionati in qualsiasi posto, purchè sia raggiungibile in HTTPS e i CORS siano configurati correttamente.**
 
-Accedere allo Storage account e configurare il cors, cliccando su Resource Shareing e impostando im blob service l'origine (l'url del sito statico) e gli allowed methods (GET e OPTIONS). Dopo avere inserito * in Allowed header and in Exposed header, sarà necessario impostare anche un Max age (200). Successivamente salvare la configurazione CORS e procedere con il caricamento dei file statici.
+**L'utilizzo dello storage account è solo una possibilità, infatti i file della UI e le custom policy possono essere posizionati in qualsiasi posto, purchè sia raggiungibile tramite HTTPS e i CORS siano configurati correttamente.**
 
-Nella folder della CustomUI sono presenti tutti i file della UI che dovranno essere caricati nello storage. Dentro ognuno di questi file sono presenti dei placeholder che riferiscono alle proprietà CustomUiBlobStorageUrl e MetadatasBlobStorageUrl del file [appsetting.json](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/CustomPolicies/appsettings.json).
+Accedere allo Storage account e configurare il CORS, cliccando su Resource Sharing e impostando im blob service l'origine (l'url del sito statico) e gli allowed methods (GET e OPTIONS). Dopo avere inserito star (*) in Allowed Header e in Exposed Header, impostare un Max Age di 200.
+
+Successivamente salvare la configurazione CORS e procedere con il caricamento dei file statici.
+
+Nella folder della CustomUI sono presenti tutti i file della UI che dovranno essere caricati nello storage. All'interno di questi file sono presenti dei placeholder che fanno riferimento alle proprietà CustomUiBlobStorageUrl e MetadatasBlobStorageUrl del file [appsetting.json](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/CustomPolicies/appsettings.json).
 
 Trovando i placeholder dentro i files della customUI e sostituendo il valore con l'url rispettivo i file sono pronti per essere caricati nello storage nella cartella customUI dentro $web.
 
 ### Caricamento dei Metadata dentro lo Storage Account ###
-Nei metadati dobbiamo modificare gli endpoint per prevedere gli endpoint dello spidproxy e il certificato dello spidproxy. Prima cosa dobbiamo generare il certifcato dello spidproxy utilizzando il tool [spid compliant certificate](https://github.com/italia/spid-compliant-certificates). Le regole per creare il certificato sono indicate a questo link> [Avviso SPID n.29 v3](https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf).
+Nei file dei metadati dobbiamo sostituire gli endpoint con quelli dello spidproxy e dobbiamo generare un certificato dello spidproxy seguendo le norme AGID. 
 
+Per creare il certifcato dello spidproxy dobbiamo utilizzare il tool [spid compliant certificate](https://github.com/italia/spid-compliant-certificates). Le regole per creare il certificato sono indicate a questo link> [Avviso SPID n.29 v3](https://www.agid.gov.it/sites/default/files/repository_files/spid-avviso-n29v3-specifiche_sp_pubblici_e_privati_0.pdf). E' possibile creare un certificato per i soggetti pubblici, mentre per i privati si crea un CSR e lo si spedisce ad AGID che a sua volta rimanderà un certificato indietro.
+Copiare il file public.env.example e rinominarlo in docker.env. Succesivamente modificarne i valori all'interno indicando i valori del soggetto pubblico. Le informazioni sono ricercabili sul sito di AGID. 
 
+- **COMMON_NAME**: la denominazione che valorizza l'estensione organizationName, senza acronimi.
 
+- **DAYS**: durata in giorni.
 
+- **ENTITY_ID**: uri contenente identificativo che inseriamo nel metadata che inviamo ad agid.
 
+- **KEY_LEN**: lasciare 3072.
 
+- **LOCALITY_NAME**: indicare la città dell'ente.
 
+- **MD_ALG**: sha256.
+
+- **ORGANIZATION_IDENTIFIER**: Codice IPA che si trova dall'indica PA di AGID. Attenzione al limite dei 64 caratteri. In caso di lunghezza maggiore mettere l'acronimo o qualcosa di simile
+
+- **ORGANIZATION_NAME**: nome completo come indicato nei pubblici registri. 
+
+- **SPID_SECTOR**: public
+
+Dopo avere settato questi valori seguire la [guida](https://github.com/italia/spid-compliant-certificates#private-key-csr-and-self-signed-certificate-for-public-sector-with-docker) eseguendo lo script gencert-with-docker.sh.
+Dopo che le chiavi sono state generate correttamente, bisognerà unirle tramite openssl. Per farlo bisognerà usare il certificato pubblico (crt.pem) e la chiave (key.pem) tramite il seguente comando
+```bash
+openssl pkcs12 -export -out outputfile.pfx -inkey key.pem -in crt.pem
+```
+Il pfx sar' da caricare all'interno dello spidproxy, mentre il crt.pem ci servirà per generare i metadata modificati degli IDP di SPID. E' presente uno [script powershell](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/Powershell%20Scripts/Get-SPIDMetadatas.ps1) che ci aiuta in questo processo.
+Si dovrà copiare il crt.pem in formato stringa senza header e footer all'interno della folder con lo script powershell successivamente si eseguirà lo script, indicando anche l'url dello spid proxy all'interno del file
+```powershell
+Get-SPIDMetadatas.ps1 -SPIDProxyBaseUrl "url-spid-proxy" -additionalSPIDProxyBaseUrl "SPIDProxy parallelo per persone giuridiche"  -certificateFilePath "path del certificato"
+```
