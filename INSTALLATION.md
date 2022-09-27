@@ -106,7 +106,7 @@ Dopo che le chiavi sono state generate correttamente, bisognerà unirle tramite 
 ```bash
 openssl pkcs12 -export -out outputfile.pfx -inkey key.pem -in crt.pem
 ```
-Il pfx sar' da caricare all'interno dello spidproxy, mentre il crt.pem ci servirà per generare i metadata modificati degli IDP di SPID. E' presente uno [script powershell](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/Powershell%20Scripts/Get-SPIDMetadatas.ps1) che ci aiuta in questo processo.
+Il pfx sarà da caricare all'interno dello spidproxy, mentre il crt.pem ci servirà per generare i metadata modificati degli IDP di SPID. E' presente uno [script powershell](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/Powershell%20Scripts/Get-SPIDMetadatas.ps1) che ci aiuta in questo processo.
 Si dovrà copiare il crt.pem in formato stringa senza header e footer all'interno della folder con lo script powershell successivamente si eseguirà lo script, indicando anche l'url dello spid proxy all'interno del file
 ```powershell
 Get-SPIDMetadatas.ps1 -SPIDProxyBaseUrl "url-spid-proxy" -additionalSPIDProxyBaseUrl "SPIDProxy parallelo per persone giuridiche"  -certificateFilePath "path del certificato"
