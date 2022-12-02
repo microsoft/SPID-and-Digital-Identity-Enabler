@@ -173,6 +173,12 @@ namespace CNS.Auth.Web.Services
 			options.CustomTrustStore = await GetTrustedCertificateCollection();
 			options.Events = new CertificateAuthenticationEvents()
 			{
+				OnAuthenticationFailed = async ctx =>
+				{
+					log.LogError(ctx.Exception, "OnAuthenticationFailed with exception: {exMessage}", ctx.Exception.ToString());
+					ctx.Fail("Certificate Validation Failed");
+					return;
+				},
 				OnCertificateValidated = async ctx =>
 				{
 					if (!await ValidateCNSCertificate(ctx.ClientCertificate))
