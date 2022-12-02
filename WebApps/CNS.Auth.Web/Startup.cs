@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
 using System.Collections.Generic;
@@ -38,9 +39,17 @@ namespace CNS.Auth.Web
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.Configure<EventLogSettings>(options => Configuration.GetSection("Logging:EventLog:Settings").Bind(options));
 			services.AddApplicationInsightsTelemetry();
 			services.AddControllersWithViews().
 				AddRazorRuntimeCompilation();
+
+			services.Configure<ForwardedHeadersOptions>(options =>
+			{
+				options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.All;
+				options.KnownNetworks.Clear();
+				options.KnownProxies.Clear();
+			});
 
 			services.AddCertificateForwarding(options =>
 			{
@@ -57,7 +66,7 @@ namespace CNS.Auth.Web
 						if (!string.IsNullOrWhiteSpace(headerValue))
 						{
 							string certPem = WebUtility.UrlDecode(headerValue);
-							clientCertificate = X509Certificate2.CreateFromPem(certPem, null);
+							clientCertificate = X509Certificate2.CreateFromPem(certPem);
 						}
 
 						return clientCertificate;
@@ -121,6 +130,7 @@ namespace CNS.Auth.Web
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			app.UseForwardedHeaders();
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -131,6 +141,7 @@ namespace CNS.Auth.Web
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+			
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 
