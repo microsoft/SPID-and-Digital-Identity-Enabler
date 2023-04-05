@@ -62,7 +62,7 @@ New-SelfSignedCertificate `
     -KeyAlgorithm RSA `
     -KeyLength 2048 `
     -KeyUsage DigitalSignature `
-    -NotAfter (Get-Date).AddMonths(20) `
+    -NotAfter (Get-Date).AddYears(10) `
     -CertStoreLocation "Cert:\CurrentUser\My"
 ```
 Dopo aver creato il cerficato bisognerà esportarlo in locale ricordandosi di selezionare export privete key. Successivamente bisognerà selezionare e inserire una password e assicurandosi che sia selezionata come Encryption TripleDeS-SHA1, in quanto l'altra su Azure B2C non funziona.
@@ -75,13 +75,14 @@ Arrivati a questo punto sarà necessario caricare le custom policy su tenant Azu
 
 **L'utilizzo dello storage account è solo una possibilità, infatti i file della UI e le custom policy possono essere posizionati in qualsiasi posto, purchè sia raggiungibile tramite HTTPS e i CORS siano configurati correttamente.**
 
-Accedere allo Storage account e configurare il CORS, cliccando su Resource Sharing e impostando im blob service l'origine (l'url del sito statico) e gli allowed methods (GET e OPTIONS). Dopo avere inserito star (*) in Allowed Header e in Exposed Header, impostare un Max Age di 200.
+Accedere allo Storage account e configurare il CORS, cliccando su Resource Sharing e impostando nel blob service l'origine https://.b2clogin.com e gli allowed methods (GET e OPTIONS). Dopo avere inserito star (*) in Allowed Header e in Exposed Header, impostare un Max Age di 200.
 
 Successivamente salvare la configurazione CORS e procedere con il caricamento dei file statici.
 
 Nella folder della CustomUI sono presenti tutti i file della UI che dovranno essere caricati nello storage. All'interno di questi file sono presenti dei placeholder che fanno riferimento alle proprietà CustomUiBlobStorageUrl e MetadatasBlobStorageUrl del file [appsetting.json](https://github.com/microsoft/SPID-and-Digital-Identity-Enabler/blob/main/AAD%20B2C/CustomPolicies/appsettings.json).
 
-Trovando i placeholder dentro i files della customUI e sostituendo il valore con l'url rispettivo i file sono pronti per essere caricati nello storage nella cartella customUI dentro $web.
+Trovando i placeholder dentro i files della customUI e sostituendo il valore con l'url rispettivo i file sono pronti per essere caricati nello storage nella cartella customUI dentro $web. 
+**Per poter visualizzare il container $web bisogna abilitare la feature static website dentro lo storage account.**
 
 ### Caricamento dei Metadata dentro lo Storage Account ###
 Nei file dei metadati dobbiamo sostituire gli endpoint con quelli dello spidproxy e dobbiamo generare un certificato dello spidproxy seguendo le norme AGID. 
