@@ -29,6 +29,9 @@ Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/p
 Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/idp/TeamSystem.png"; path = "$BasePath\images\idp\TeamSystem.png"}
 Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/idp/CIE.png"; path = "$BasePath\images\idp\CIE.png"}
 Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/idp/EIDAS.png"; path = "$BasePath\images\idp\EIDAS.png"}
+Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/idp/EtnaHitech.png"; path = "$BasePath\images\idp\EtnaHitech.png"}
+Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/idp/Infocamere.png"; path = "$BasePath\images\idp\Infocamere.png"}
+
 Set-AdfsWebTheme -TargetName $ThemeName -AdditionalFileResource @{Uri = "/adfs/portal/images/spid-agid-logo-lb.png"; path = "$BasePath\images\spid-agid-logo-lb.png"}
 
 
