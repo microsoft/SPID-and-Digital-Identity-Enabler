@@ -25,21 +25,35 @@ public static class FederatorRequestExtensions
     }
 
     public static int GetAttributeConsumingService(this FederatorRequest federatorRequest,
-        int cieAttributeConsumerServiceValue,
-        int eidasAttributeConsumerServiceValue,
-        int attributeConsumerService)
+        int cieAttributeConsumingServiceValue,
+        int eidasAttributeConsumingServiceValue,
+        int spidAttributeConsumingService)
     {
         if (federatorRequest.IsCIE())
         {
-            return cieAttributeConsumerServiceValue;
+            return cieAttributeConsumingServiceValue;
         }
         else if (federatorRequest.IsEIDAS())
         {
-            return eidasAttributeConsumerServiceValue;
+            return eidasAttributeConsumingServiceValue;
         }
         else
         {
-            return attributeConsumerService;
+            return spidAttributeConsumingService;
+        }
+    }
+
+    public static int GetSPIDLevel(this FederatorRequest federatorRequest,
+        int cieSpidLevel,
+        int spidSpidLevel)
+    {
+        if (federatorRequest.IsCIE())
+        {
+            return cieSpidLevel;
+        }
+        else
+        {
+            return spidSpidLevel;
         }
     }
 }

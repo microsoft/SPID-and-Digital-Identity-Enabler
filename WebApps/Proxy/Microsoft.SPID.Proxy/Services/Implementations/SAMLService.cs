@@ -37,7 +37,8 @@ public class SAMLService : ISAMLService
 
     public NameValueCollection GetRefererQueryString()
     {
-        return HttpUtility.ParseQueryString(_httpContextAccessor.HttpContext.Request.Headers["Referer"]);
+        Uri refererUri = new Uri(_httpContextAccessor.HttpContext.Request.Headers["Referer"]);
+        return HttpUtility.ParseQueryString(refererUri.Query);
     }
 
     public NameValueCollection GetRelayStateQueryString(NameValueCollection refererQueryString)

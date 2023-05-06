@@ -14,4 +14,7 @@ public class SPIDOptions
     public string PurposeName { get; set; }
     public string SpidLevelQueryStringParamName { get; set; }
     public int AssertionIssueInstantToleranceMins { get; set; }
+    public string DefaultComparison{ get; set; }
+
+    public string ComparisonQueryStringParamName { get; set; }
 }
