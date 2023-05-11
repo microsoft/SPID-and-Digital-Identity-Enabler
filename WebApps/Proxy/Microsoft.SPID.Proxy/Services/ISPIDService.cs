@@ -9,10 +9,12 @@ namespace Microsoft.SPID.Proxy.Services;
 
 public interface ISPIDService
 {
-    int GetACSValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
-    int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
-    string GetPurposeValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
+    int GetAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
+	int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie);
+	string GetComparisonValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie);
+	string GetPurposeValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
     bool IsSpidLValid(NameValueCollection queryStringCollection, string origin = "");
     bool IsPurposeValid(NameValueCollection queryStringCollection, string origin = "");
     bool IsACSValid(NameValueCollection queryStringCollection, string origin = "");
+    bool IsComparisonValid(NameValueCollection queryStringCollection, string origin = "");
 }
