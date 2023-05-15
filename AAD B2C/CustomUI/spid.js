@@ -107,14 +107,19 @@ $(document).ready(function() {
     var spidpgarea = $("#spidpg-button-container");
     var ciearea = $("#cie-button-container");
     var cnsarea = $("#cns-button-container");
+    var eidasarea = $("#eidas-button-container");
+
 
     var spidPfIdps = $("button[id^='SPID-PF'").sort(randomSort);
     var spidPgIdps = $("button[id^='SPID-PG'").sort(randomSort);
     var cieIdps = $("button[id^='CIE-'").sort(randomSort);
     var cnsIdps = $("button[id^='CNS-'").sort(randomSort);
+    var eidasIdps = $("button[id^='eIDAS-'").sort(randomSort);
 
     AddSPIDButton(spidPfIdps, spidpfarea);
     // AddSPIDButton(spidPgIdps, spidpgarea);
     MoveButtons(cieIdps, ciearea);
     MoveButtons(cnsIdps, cnsarea);
+    MoveButtons(eidasIdps, eidasarea);
+
 });
