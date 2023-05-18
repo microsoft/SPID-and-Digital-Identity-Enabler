@@ -53,6 +53,7 @@ builder.Services.Configure<CIEOptions>(options => builder.Configuration.GetSecti
 builder.Services.Configure<TechnicalChecksOptions>(options => builder.Configuration.GetSection("TechnicalChecks").Bind(options));
 builder.Services.Configure<EventLogSettings>(options => builder.Configuration.GetSection("Logging:EventLog:Settings").Bind(options));
 builder.Services.Configure<LoggingOptions>(options => builder.Configuration.GetSection("SPIDProxyLogging").Bind(options));
+builder.Services.Configure<OptionalResponseAlterationOptions>(builder.Configuration.GetSection("OptionalResponseAlteration"));
 
 builder.Services
 	.AddMvc()

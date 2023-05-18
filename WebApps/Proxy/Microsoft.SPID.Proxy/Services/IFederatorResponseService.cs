@@ -22,4 +22,6 @@ public interface IFederatorResponseService
     string GetUserFriendlyMessage(string statusMessageText);
 
     Task SignAssertionAsync(XmlDocument doc, string assertionDigestMethod = SignedXml.XmlDsigSHA256Url);
+
+    void ApplyOptionalResponseAlteration(XmlDocument doc);
 }
