@@ -50,7 +50,7 @@ public class SAMLService : ISAMLService
             var questMarkIndex = relayState.IndexOf("?");
 
             relayQueryString = questMarkIndex > -1 ?
-                HttpUtility.ParseQueryString(relayState.Substring(questMarkIndex)) : null;
+                HttpUtility.ParseQueryString(relayState.Substring(questMarkIndex)) : HttpUtility.ParseQueryString(relayState);
         }
 
         return relayQueryString;
@@ -87,7 +87,8 @@ public class SAMLService : ISAMLService
         {
             var questMarkIndex = wctx.IndexOf("?");
 
-            wctxQueryString = questMarkIndex > -1 ? HttpUtility.ParseQueryString(wctx.Substring(questMarkIndex)) : null;
+            wctxQueryString = questMarkIndex > -1 ? HttpUtility.ParseQueryString(wctx.Substring(questMarkIndex)) 
+                : HttpUtility.ParseQueryString(wctx);
 
         }
 
