@@ -570,7 +570,7 @@
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE Test" />
           </OutputClaims>
           <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIE" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIETest" />
         </TechnicalProfile>
         <TechnicalProfile Id="CIE-SAML2">
           <DisplayName>CIE</DisplayName>
@@ -582,7 +582,7 @@
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE" />
           </OutputClaims>
           <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIETest" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIE" />
         </TechnicalProfile>
 
         
