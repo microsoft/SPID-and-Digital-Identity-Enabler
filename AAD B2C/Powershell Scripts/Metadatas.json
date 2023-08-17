@@ -85,6 +85,11 @@
             "providername": "Infocamere",
             "providermetadata": "https://loginspid.infocamere.it/metadata",
             "supportsLegalSubject": true
+        },
+        {
+            "providername": "IntesiGroup",
+            "providermetadata": "https://spid.intesigroup.com/metadata/metadata.xml",
+            "supportsLegalSubject": true
         }
     ]
 }

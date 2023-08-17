@@ -2040,7 +2040,7 @@ function RedirectToSpidIdP(value) {
 }
 
 //All the IdPs as named in ADFS must be listed here
-var idpsNames = ["Sielte", "Infocert", "Postecom", "TIM", "Aruba", "Register", "Namirial", "Intesa", "Lepida", "SPIDValidator", "TeamSystem", "Infocamere", "EtnaHitech"];
+var idpsNames = ["Sielte", "Infocert", "Postecom", "TIM", "Aruba", "Register", "Namirial", "Intesa", "Lepida", "SPIDValidator", "TeamSystem", "Infocamere", "EtnaHitech", "IntesiGroup"];
 var idpsFound = [];
 
 //sort them randomly...
