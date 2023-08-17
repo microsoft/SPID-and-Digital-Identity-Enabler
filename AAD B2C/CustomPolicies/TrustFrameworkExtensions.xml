@@ -105,6 +105,9 @@
         <TechnicalProfile Id="SM-Saml-EtnaHitech">
           <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
         </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-IntesiGroup">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
         <TechnicalProfile Id="SM-Saml-eIDAS">
           <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
         </TechnicalProfile>
@@ -394,6 +397,26 @@
     </ClaimsProvider>
 
     <ClaimsProvider>
+      <DisplayName>IntesiGroup</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="IntesiGroup-SAML2">
+          <DisplayName>IntesiGroup</DisplayName>
+          <Description>Login with your IntesiGroup SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/intesigroup-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="IntesiGroup SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-IntesiGroup" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    
+
+    <ClaimsProvider>
       <DisplayName>eIDAS</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="eIDAS-Base-SAML2">
@@ -654,6 +677,7 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TeamSystemExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocamereExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-EtnaHitechExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesiGroupExchange" />
             <!-- <ClaimsProviderSelection TargetClaimsExchangeId="SpidSamlCheckExchange" /> -->
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
@@ -690,6 +714,8 @@
             <ClaimsExchange Id="SPID-PF-TeamSystemExchange" TechnicalProfileReferenceId="TeamSystem-SAML2" />
             <ClaimsExchange Id="SPID-PF-InfocamereExchange" TechnicalProfileReferenceId="Infocamere-SAML2" />
             <ClaimsExchange Id="SPID-PF-EtnaHitechExchange" TechnicalProfileReferenceId="EtnaHitech-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesiGroupExchange" TechnicalProfileReferenceId="IntesiGroup-SAML2" />
+            
             <!-- <ClaimsExchange Id="SpidSamlCheckExchange" TechnicalProfileReferenceId="SPIDSamlCheck-SAML2" /> -->
             <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
             <ClaimsExchange Id="CIE-TestExchange" TechnicalProfileReferenceId="CIETest-SAML2" />
@@ -783,7 +809,9 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TIMExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TeamSystemExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocamereExchange" />
-            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-EtnaHitechExchange" />            
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-EtnaHitechExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesiGroupExchange" />
+                  
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-Exchange" />
@@ -820,6 +848,8 @@
             <ClaimsExchange Id="SPID-PF-TeamSystemExchange" TechnicalProfileReferenceId="TeamSystem-SAML2" />
             <ClaimsExchange Id="SPID-PF-InfocamereExchange" TechnicalProfileReferenceId="Infocamere-SAML2" />
             <ClaimsExchange Id="SPID-PF-EtnaHitechExchange" TechnicalProfileReferenceId="EtnaHitech-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesiGroupExchange" TechnicalProfileReferenceId="IntesiGroup-SAML2" />
+            
             <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
             <ClaimsExchange Id="CIE-TestExchange" TechnicalProfileReferenceId="CIETest-SAML2" />
             <ClaimsExchange Id="CIE-Exchange" TechnicalProfileReferenceId="CIE-SAML2" />
