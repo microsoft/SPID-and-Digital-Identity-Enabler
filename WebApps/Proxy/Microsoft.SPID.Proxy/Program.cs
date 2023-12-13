@@ -19,7 +19,17 @@ if (string.Equals(builder.Configuration["ASPNETCORE_FORWARDEDHEADERS_ENABLED"], 
 builder.Services.AddRazorPages();
 
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("default", client =>
+{
+	bool userAgentEnabled = false;
+	bool.TryParse(builder.Configuration["UserAgent:Enabled"], out userAgentEnabled);
+	if(!userAgentEnabled)
+	{
+		return;
+	}
+	var userAgent = builder.Configuration["UserAgent:Value"];
+	client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+});
 
 builder.Services.AddControllersWithViews()
 	.AddNewtonsoftJson(options =>
