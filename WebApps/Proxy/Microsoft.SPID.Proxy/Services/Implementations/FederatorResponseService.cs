@@ -121,7 +121,7 @@ public class FederatorResponseService : IFederatorResponseService
 
 		if (_cache == null || string.IsNullOrWhiteSpace(metadataXml))
 		{
-			using var httpClient = _httpClientFactory.CreateClient();
+			using var httpClient = _httpClientFactory.CreateClient("default");
 			metadataXml = await httpClient.GetStringAsync(metadataUrl);
 			if (_cache != null)
 			{
