@@ -16,4 +16,5 @@ public class AttributeConsumingServiceOptions
 
 	public int CIEAttributeConsumingService { get; set; }
     public int EIDASAttributeConsumingService { get; set; }
+    public bool DisableACSFromReferer { get; set; }
 }

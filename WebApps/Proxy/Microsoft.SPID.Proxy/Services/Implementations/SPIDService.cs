@@ -151,22 +151,28 @@ public class SPIDService : ISPIDService
 	public int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
 	{
 		var ACSValue = _attributeConsumingServiceOptions.AttributeConsumingServiceDefaultValue;
+		if (_attributeConsumingServiceOptions.DisableACSFromReferer)
+		{
+			return ACSValue;
+		}
+
+		string paramName = _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName;
 
 		//check for ACS in referer first, then relaystate, then wctx. If none is found, use default
 		if (IsSPIDACSValid(refererQueryString, "REFERER"))
 		{
-			_logger.LogDebug("Using AttributeConsumingServiceIndex from Referer: {acsValue}", refererQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
-			ACSValue = int.Parse(refererQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from Referer: {acsValue}", refererQueryString[paramName]);
+			ACSValue = int.Parse(refererQueryString[paramName]);
 		}
 		else if (IsSPIDACSValid(relayQueryString, "RELAYSTATE"))
 		{
-			_logger.LogDebug("Using AttributeConsumingServiceIndex from RelayState: {acsValue}", relayQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
-			ACSValue = int.Parse(relayQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from RelayState: {acsValue}", relayQueryString[paramName]);
+			ACSValue = int.Parse(relayQueryString[paramName]);
 		}
 		else if (IsSPIDACSValid(wctxQueryString, "WCTX"))
 		{
-			_logger.LogDebug("Using AttributeConsumingServiceIndex from WCTX: {acsValue}", wctxQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
-			ACSValue = int.Parse(wctxQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from WCTX: {acsValue}", wctxQueryString[paramName]);
+			ACSValue = int.Parse(wctxQueryString[paramName]);
 		}
 		else
 		{
@@ -179,6 +185,12 @@ public class SPIDService : ISPIDService
 	public int GetCIEAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
 	{
 		var ACSValue = _attributeConsumingServiceOptions.CIEAttributeConsumingService;
+
+		if (_attributeConsumingServiceOptions.DisableACSFromReferer)
+		{
+			return ACSValue;
+		}
+
 		string paramName = _attributeConsumingServiceOptions.CIEAttrConsServIndexQueryStringParamName;
 
 		//check for ACS in referer first, then relaystate, then wctx. If none is found, use default
