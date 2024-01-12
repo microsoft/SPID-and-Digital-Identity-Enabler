@@ -17,4 +17,5 @@ public class SPIDOptions
     public string DefaultComparison{ get; set; }
 
     public string ComparisonQueryStringParamName { get; set; }
+    public bool DisableSpidLevelFromReferer { get; set; }
 }

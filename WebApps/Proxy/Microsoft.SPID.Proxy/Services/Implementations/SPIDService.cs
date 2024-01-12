@@ -210,6 +210,11 @@ public class SPIDService : ISPIDService
 	{
 		var spidL = isCie ? _cieOptions.DefaultSPIDL : _spidOptions.DefaultSPIDL;
 
+		if(_spidOptions.DisableSpidLevelFromReferer)
+		{
+			return spidL;
+		}
+
 		if (IsSpidLValid(refererQueryString, "REFERER"))
 		{
 			_logger.LogDebug("Using spidL from Referer: {spidLValue}", refererQueryString[_spidOptions.SpidLevelQueryStringParamName]);
