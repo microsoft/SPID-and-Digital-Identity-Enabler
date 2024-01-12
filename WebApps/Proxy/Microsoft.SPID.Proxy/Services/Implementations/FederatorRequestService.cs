@@ -132,12 +132,13 @@ public class FederatorRequestService : IFederatorRequestService
 
         try
         {
-            var attributeConsumingService = federatorRequest.GetAttributeConsumingService(
-                _attributeConsumingServiceOptions.CIEAttributeConsumingService,
+            var attributeConsumingServiceIndex = federatorRequest.GetAttributeConsumingService(
+                _spidService.GetCIEAttributeConsumigServiceValue(refererQueryString,relayQueryString,wctxQueryString),
                 _attributeConsumingServiceOptions.EIDASAttributeConsumingService,
-                _spidService.GetAttributeConsumigServiceValue(refererQueryString, relayQueryString, wctxQueryString)
+                _spidService.GetSPIDAttributeConsumigServiceValue(refererQueryString, relayQueryString, wctxQueryString)
             );
-            requestAsXml.SetAttributeConsumingService(attributeConsumingService);
+
+            requestAsXml.SetAttributeConsumingService(attributeConsumingServiceIndex);
 
             var idenityProviderUrl = _idpService.GetIDPUrl(federatorRequest.IdentityProvider);
             rootEl.SetAttribute("Destination", idenityProviderUrl);

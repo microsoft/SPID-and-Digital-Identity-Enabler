@@ -74,31 +74,61 @@ public class SPIDService : ISPIDService
 		return true;
 	}
 
-	public bool IsACSValid(NameValueCollection queryStringCollection, string origin = "")
+	public bool IsSPIDACSValid(NameValueCollection queryStringCollection, string origin = "")
 	{
+		string paramName = _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName;
 
 		if (queryStringCollection == null)
 		{
-			_logger.LogDebug("Checking {AttrConsServIndexQueryStringParamName} in {origin}: queryString is null", _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName, origin);
+			_logger.LogDebug("Checking {AttrConsServIndexQueryStringParamName} in {origin}: queryString is null", paramName, origin);
 			return false;
 		}
 
-		if (string.IsNullOrWhiteSpace(queryStringCollection[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]))
+		if (string.IsNullOrWhiteSpace(queryStringCollection[paramName]))
 		{
 			_logger.LogDebug("Checking {AttrConsServIndexQueryStringParamName} in {origin}: {AttrConsServIndexQueryStringParamName} key not present",
-				_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName, origin, _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName);
+				paramName, origin, paramName);
 			return false;
 		}
 
-		if (!_attributeConsumingServiceOptions.ValidACS.Contains(queryStringCollection[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]))
+		if (!_attributeConsumingServiceOptions.ValidACS.Contains(queryStringCollection[paramName]))
 		{
 			_logger.LogDebug("Checking {AttrConsServIndexQueryStringParamName} in {origin}: {AttrConsServIndexQueryStringParamName} value not valid. Found: {foundAttrConsServIndexQueryStringParamName]}, Expecting one of: [{expectedAttrConsServIndexQueryStringParamName}]",
-				_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName, origin, _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName, queryStringCollection[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName], _attributeConsumingServiceOptions.ValidACS);
+				paramName, origin, paramName, queryStringCollection[paramName], _attributeConsumingServiceOptions.ValidACS);
 			return false;
 		}
 
 		return true;
 	}
+
+	public bool IsCIEACSValid(NameValueCollection queryStringCollection, string origin = "")
+	{
+		string paramName = _attributeConsumingServiceOptions.CIEAttrConsServIndexQueryStringParamName;
+
+		if (queryStringCollection == null)
+		{
+			_logger.LogDebug("Checking {CIEAttrConsServIndexQueryStringParamName} in {origin}: queryString is null", paramName, origin);
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(queryStringCollection[paramName]))
+		{
+			_logger.LogDebug("Checking {CIEAttrConsServIndexQueryStringParamName} in {origin}: {CIEAttrConsServIndexQueryStringParamName} key not present",
+				paramName, origin, paramName);
+			return false;
+		}
+
+		if (!_attributeConsumingServiceOptions.CIEValidACS.Contains(queryStringCollection[paramName]))
+		{
+			_logger.LogDebug("Checking {CIEAttrConsServIndexQueryStringParamName} in {origin}: {CIEAttrConsServIndexQueryStringParamName} value not valid. Found: {foundCIEAttrConsServIndexQueryStringParamName]}, Expecting one of: [{expectedCIEAttrConsServIndexQueryStringParamName}]",
+				paramName, origin, paramName, queryStringCollection[paramName], _attributeConsumingServiceOptions.CIEValidACS);
+			return false;
+		}
+
+		return true;
+	}
+
+
 	public bool IsComparisonValid(NameValueCollection queryStringCollection, string origin = "")
 	{
 
@@ -118,22 +148,22 @@ public class SPIDService : ISPIDService
 		return true;
 	}
 
-	public int GetAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
+	public int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
 	{
 		var ACSValue = _attributeConsumingServiceOptions.AttributeConsumingServiceDefaultValue;
 
 		//check for ACS in referer first, then relaystate, then wctx. If none is found, use default
-		if (IsACSValid(refererQueryString, "REFERER"))
+		if (IsSPIDACSValid(refererQueryString, "REFERER"))
 		{
 			_logger.LogDebug("Using AttributeConsumingServiceIndex from Referer: {acsValue}", refererQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
 			ACSValue = int.Parse(refererQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
 		}
-		else if (IsACSValid(relayQueryString, "RELAYSTATE"))
+		else if (IsSPIDACSValid(relayQueryString, "RELAYSTATE"))
 		{
 			_logger.LogDebug("Using AttributeConsumingServiceIndex from RelayState: {acsValue}", relayQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
 			ACSValue = int.Parse(relayQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
 		}
-		else if (IsACSValid(wctxQueryString, "WCTX"))
+		else if (IsSPIDACSValid(wctxQueryString, "WCTX"))
 		{
 			_logger.LogDebug("Using AttributeConsumingServiceIndex from WCTX: {acsValue}", wctxQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
 			ACSValue = int.Parse(wctxQueryString[_attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName]);
@@ -145,6 +175,36 @@ public class SPIDService : ISPIDService
 
 		return ACSValue;
 	}
+
+	public int GetCIEAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
+	{
+		var ACSValue = _attributeConsumingServiceOptions.CIEAttributeConsumingService;
+		string paramName = _attributeConsumingServiceOptions.CIEAttrConsServIndexQueryStringParamName;
+
+		//check for ACS in referer first, then relaystate, then wctx. If none is found, use default
+		if (IsCIEACSValid(refererQueryString, "REFERER"))
+		{
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from Referer: {acsValue}", refererQueryString[paramName]);
+			ACSValue = int.Parse(refererQueryString[paramName]);
+		}
+		else if (IsCIEACSValid(relayQueryString, "RELAYSTATE"))
+		{
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from RelayState: {acsValue}", relayQueryString[paramName]);
+			ACSValue = int.Parse(relayQueryString[paramName]);
+		}
+		else if (IsCIEACSValid(wctxQueryString, "WCTX"))
+		{
+			_logger.LogDebug("Using AttributeConsumingServiceIndex from WCTX: {acsValue}", wctxQueryString[paramName]);
+			ACSValue = int.Parse(wctxQueryString[paramName]);
+		}
+		else
+		{
+			_logger.LogDebug("Using Default AttributeConsumingServiceIndex: {acsValue}", ACSValue);
+		}
+
+		return ACSValue;
+	}
+
 
 	public int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie)
 	{
