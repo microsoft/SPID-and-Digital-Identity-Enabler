@@ -104,19 +104,19 @@ public static class RequestSAMLAsXMLExtensions
 		return samlRequest;
 	}
 
-	public static XmlDocument SetComparison(this XmlDocument samlRequest)
+	public static XmlDocument SetComparison(this XmlDocument samlRequest, string comparisonValue)
     {
 		var RequestedAuthnContext = samlRequest.GetElementsByTagName("RequestedAuthnContext", "*")[0];
 		var comparison = RequestedAuthnContext.Attributes["Comparison"];
 		if (comparison == null)
 		{
 			XmlAttribute NewComparison = samlRequest.CreateAttribute("Comparison");
-			NewComparison.Value = "minimum";
+			NewComparison.Value = comparisonValue;
 			RequestedAuthnContext.Attributes.Append(NewComparison);
 		}
 		else
 		{
-			comparison.Value = "minimum";
+			comparison.Value = comparisonValue;
 		}
 
 		return samlRequest;

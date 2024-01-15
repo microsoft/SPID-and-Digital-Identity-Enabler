@@ -19,7 +19,17 @@ if (string.Equals(builder.Configuration["ASPNETCORE_FORWARDEDHEADERS_ENABLED"], 
 builder.Services.AddRazorPages();
 
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("default", client =>
+{
+	bool userAgentEnabled = false;
+	bool.TryParse(builder.Configuration["UserAgent:Enabled"], out userAgentEnabled);
+	if(!userAgentEnabled)
+	{
+		return;
+	}
+	var userAgent = builder.Configuration["UserAgent:Value"];
+	client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+});
 
 builder.Services.AddControllersWithViews()
 	.AddNewtonsoftJson(options =>
@@ -38,20 +48,29 @@ builder.Services.AddSingleton<ISPIDService, SPIDService>();
 builder.Services.AddSingleton<IIDPService, IDPService>();
 builder.Services.AddSingleton<IXMLResponseCheckService, XMLResponseCheckService>();
 
-builder.Services.Configure<AttributeConsumingServiceOptions>(options => builder.Configuration.GetSection("attributeConsumingService").Bind(options));
-builder.Services.Configure<AttributeConsumingServiceOptions>(options => options.ValidACS = builder.Configuration.GetValue<string>("attributeConsumingService:validACS").Split(",").ToList());
-builder.Services.Configure<CertificateOptions>(options => builder.Configuration.GetSection("Certificate").Bind(options));
-builder.Services.Configure<CustomErrorOptions>(options => builder.Configuration.GetSection("customErrors").Bind(options));
-builder.Services.Configure<FederatorOptions>(options => builder.Configuration.GetSection("Federator").Bind(options));
-builder.Services.Configure<IDPMetadatasOptions>(options => builder.Configuration.GetSection("idpMetadatas").Bind(options));
-builder.Services.Configure<LogAccessOptions>(options => {
-	builder.Configuration.GetSection("SPIDProxyLogging:LogAccess").Bind(options);
-	options.FieldsToLog = builder.Configuration.GetValue<string>("SPIDProxyLogging:LogAccess:FieldsToLog").Split(",").ToList();
+builder.Services.Configure<AttributeConsumingServiceOptions>(options => {
+	var acsSection = builder.Configuration.GetSection("attributeConsumingService");
+	acsSection.Bind(options);
+	options.ValidACS = acsSection["validACS"].Split(",").ToList();
+	options.CIEValidACS= acsSection["CIEvalidACS"].Split(",").ToList();
 });
-builder.Services.Configure<SPIDOptions>(options => builder.Configuration.GetSection("spid").Bind(options));
-builder.Services.Configure<TechnicalChecksOptions>(options => builder.Configuration.GetSection("TechnicalChecks").Bind(options));
-builder.Services.Configure<EventLogSettings>(options => builder.Configuration.GetSection("Logging:EventLog:Settings").Bind(options));
-builder.Services.Configure<LoggingOptions>(options => builder.Configuration.GetSection("SPIDProxyLogging").Bind(options));
+
+builder.Services.Configure<CertificateOptions>(builder.Configuration.GetSection("Certificate"));
+builder.Services.Configure<CustomErrorOptions>(builder.Configuration.GetSection("customErrors"));
+builder.Services.Configure<FederatorOptions>(builder.Configuration.GetSection("Federator"));
+builder.Services.Configure<IDPMetadatasOptions>(builder.Configuration.GetSection("idpMetadatas"));
+builder.Services.Configure<LogAccessOptions>(options => {
+	var spidProxyLoggingSection = builder.Configuration.GetSection("SPIDProxyLogging:LogAccess");
+	spidProxyLoggingSection.Bind(options);
+	options.FieldsToLog = spidProxyLoggingSection["FieldsToLog"].Split(",").ToList();
+});
+
+builder.Services.Configure<SPIDOptions>(builder.Configuration.GetSection("spid"));
+builder.Services.Configure<CIEOptions>(builder.Configuration.GetSection("cie"));
+builder.Services.Configure<TechnicalChecksOptions>(builder.Configuration.GetSection("TechnicalChecks"));
+builder.Services.Configure<EventLogSettings>(builder.Configuration.GetSection("Logging:EventLog:Settings"));
+builder.Services.Configure<LoggingOptions>(builder.Configuration.GetSection("SPIDProxyLogging"));
+builder.Services.Configure<OptionalResponseAlterationOptions>(builder.Configuration.GetSection("OptionalResponseAlteration"));
 
 builder.Services
 	.AddMvc()

@@ -102,6 +102,21 @@
         <TechnicalProfile Id="SM-Saml-TeamSystem">
           <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
         </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-EtnaHitech">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-IntesiGroup">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-eIDAS">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-eIDASTest">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="SM-Saml-Infocamere">
+          <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
+        </TechnicalProfile>
         <TechnicalProfile Id="SM-Saml-SPIDValidator">
           <IncludeTechnicalProfile ReferenceId="SM-Saml-idp" />
         </TechnicalProfile>
@@ -344,7 +359,127 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Infocamere</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Infocamere-SAML2">
+          <DisplayName>Infocamere</DisplayName>
+          <Description>Login with your Infocamere SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/infocamere-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="Infocamere SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-Infocamere" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>EtnaHitech</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="EtnaHitech-SAML2">
+          <DisplayName>EtnaHitech</DisplayName>
+          <Description>Login with your EtnaHitech SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/etnahitech-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="EtnaHitech SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-EtnaHitech" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>IntesiGroup</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="IntesiGroup-SAML2">
+          <DisplayName>IntesiGroup</DisplayName>
+          <Description>Login with your IntesiGroup SPID account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/intesigroup-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="IntesiGroup SPID" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="SPID-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-IntesiGroup" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
     
+
+    <ClaimsProvider>
+      <DisplayName>eIDAS</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="eIDAS-Base-SAML2">
+          <DisplayName>eIDAS-Base</DisplayName>
+          <Protocol Name="SAML2" />
+          <Metadata>
+            <Item Key="WantsEncryptedAssertions">false</Item>
+            <Item Key="XmlSignatureAlgorithm">Sha256</Item>
+            <Item Key="NameIdPolicyFormat">urn:oasis:names:tc:SAML:2.0:nameid-format:transient</Item>
+            <Item Key="NameIdPolicyAllowCreate">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="SamlAssertionSigning" StorageReferenceId="B2C_1A_SigningKey" />
+            <Key Id="SamlMessageSigning" StorageReferenceId="B2C_1A_SigningKey" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="spidCode" PartnerClaimType="spidCode" />
+            <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="name" />
+            <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="familyName" />
+            <OutputClaim ClaimTypeReferenceId="dateOfBirth" PartnerClaimType="dateOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="placeOfBirth" PartnerClaimType="placeOfBirth" />
+            <OutputClaim ClaimTypeReferenceId="address" PartnerClaimType="address" />
+            <OutputClaim ClaimTypeReferenceId="gender" PartnerClaimType="gender" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+            <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="spidCode" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+            <OutputClaimsTransformation ReferenceId="CreateDisplayNameFromFirstNameAndLastName" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="eIDAS-SAML2">
+          <DisplayName>eIDAS</DisplayName>
+          <Description>Login with your eIDAS account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/eidas-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="eIDAS" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="eIDAS-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-eIDAS" />
+        </TechnicalProfile>
+        <TechnicalProfile Id="eIDASTest-SAML2">
+          <DisplayName>eIDAS Test</DisplayName>
+          <Description>Login with your eIDAS test account</Description>
+          <Metadata>
+            <Item Key="PartnerEntity">{Settings:MetadatasBlobStorageUrl}/eidastest-metadata.xml</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="eIDAS Test" />
+          </OutputClaims>
+          <IncludeTechnicalProfile ReferenceId="eIDAS-Base-SAML2" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-eIDASTest" />
+        </TechnicalProfile>
+
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
     <ClaimsProvider>
       <DisplayName>SPIDValidator</DisplayName>
       <TechnicalProfiles>
@@ -458,7 +593,7 @@
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE Test" />
           </OutputClaims>
           <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIE" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIETest" />
         </TechnicalProfile>
         <TechnicalProfile Id="CIE-SAML2">
           <DisplayName>CIE</DisplayName>
@@ -470,7 +605,7 @@
             <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="CIE" />
           </OutputClaims>
           <IncludeTechnicalProfile ReferenceId="CIE-Base-SAML2" />
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIETest" />
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Saml-CIE" />
         </TechnicalProfile>
 
         
@@ -540,7 +675,9 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SielteExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TIMExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TeamSystemExchange" />
-            
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocamereExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-EtnaHitechExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesiGroupExchange" />
             <!-- <ClaimsProviderSelection TargetClaimsExchangeId="SpidSamlCheckExchange" /> -->
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
@@ -548,6 +685,8 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="CNS-Exchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovValidatorExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="eIDAS-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="eIDASTest-Exchange" />
           </ClaimsProviderSelections>
           <!-- <ClaimsExchanges>
             <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
@@ -573,6 +712,9 @@
             <ClaimsExchange Id="SPID-PF-SielteExchange" TechnicalProfileReferenceId="Sielte-SAML2" />
             <ClaimsExchange Id="SPID-PF-TIMExchange" TechnicalProfileReferenceId="TIM-SAML2" />
             <ClaimsExchange Id="SPID-PF-TeamSystemExchange" TechnicalProfileReferenceId="TeamSystem-SAML2" />
+            <ClaimsExchange Id="SPID-PF-InfocamereExchange" TechnicalProfileReferenceId="Infocamere-SAML2" />
+            <ClaimsExchange Id="SPID-PF-EtnaHitechExchange" TechnicalProfileReferenceId="EtnaHitech-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesiGroupExchange" TechnicalProfileReferenceId="IntesiGroup-SAML2" />
             
             <!-- <ClaimsExchange Id="SpidSamlCheckExchange" TechnicalProfileReferenceId="SPIDSamlCheck-SAML2" /> -->
             <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
@@ -581,7 +723,9 @@
             <ClaimsExchange Id="CNS-Exchange" TechnicalProfileReferenceId="CNS-SAML2" />
             <ClaimsExchange Id="DemoSPIDGovExchange" TechnicalProfileReferenceId="DemoSPIDGov-SAML2" />
             <ClaimsExchange Id="DemoSPIDGovValidatorExchange" TechnicalProfileReferenceId="DemoSPIDGovValidator-SAML2" />
-                        
+            <ClaimsExchange Id="eIDAS-Exchange" TechnicalProfileReferenceId="eIDAS-SAML2" />
+            <ClaimsExchange Id="eIDASTest-Exchange" TechnicalProfileReferenceId="eIDASTest-SAML2" />
+            
           </ClaimsExchanges>
         </OrchestrationStep>
 
@@ -664,12 +808,19 @@
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SielteExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TIMExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-TeamSystemExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-InfocamereExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-EtnaHitechExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-IntesiGroupExchange" />
+                  
             <ClaimsProviderSelection TargetClaimsExchangeId="SPID-PF-SpidValidatorExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-TestExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CIE-Exchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="CNS-Exchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="DemoSPIDGovValidatorExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="eIDAS-Exchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="eIDASTest-Exchange" />
+            
           </ClaimsProviderSelections>
           <ClaimsExchanges>
             <ClaimsExchange Id="LocalAccountSigninEmailExchange" TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
@@ -695,12 +846,18 @@
             <ClaimsExchange Id="SPID-PF-SielteExchange" TechnicalProfileReferenceId="Sielte-SAML2" />
             <ClaimsExchange Id="SPID-PF-TIMExchange" TechnicalProfileReferenceId="TIM-SAML2" />
             <ClaimsExchange Id="SPID-PF-TeamSystemExchange" TechnicalProfileReferenceId="TeamSystem-SAML2" />
+            <ClaimsExchange Id="SPID-PF-InfocamereExchange" TechnicalProfileReferenceId="Infocamere-SAML2" />
+            <ClaimsExchange Id="SPID-PF-EtnaHitechExchange" TechnicalProfileReferenceId="EtnaHitech-SAML2" />
+            <ClaimsExchange Id="SPID-PF-IntesiGroupExchange" TechnicalProfileReferenceId="IntesiGroup-SAML2" />
+            
             <ClaimsExchange Id="SPID-PF-SpidValidatorExchange" TechnicalProfileReferenceId="SPIDValidator-SAML2" />
             <ClaimsExchange Id="CIE-TestExchange" TechnicalProfileReferenceId="CIETest-SAML2" />
             <ClaimsExchange Id="CIE-Exchange" TechnicalProfileReferenceId="CIE-SAML2" />
             <ClaimsExchange Id="CNS-Exchange" TechnicalProfileReferenceId="CNS-SAML2" />
             <ClaimsExchange Id="DemoSPIDGovExchange" TechnicalProfileReferenceId="DemoSPIDGov-SAML2" />
             <ClaimsExchange Id="DemoSPIDGovValidatorExchange" TechnicalProfileReferenceId="DemoSPIDGovValidator-SAML2" />
+            <ClaimsExchange Id="eIDAS-Exchange" TechnicalProfileReferenceId="eIDAS-SAML2" />
+            <ClaimsExchange Id="eIDASTest-Exchange" TechnicalProfileReferenceId="eIDASTest-SAML2" />
             
           </ClaimsExchanges>
         </OrchestrationStep>

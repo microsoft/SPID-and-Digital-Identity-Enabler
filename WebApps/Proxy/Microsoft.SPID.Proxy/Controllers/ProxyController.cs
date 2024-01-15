@@ -177,6 +177,8 @@ public class ProxyController : Controller
 					.AlterSubjectConfirmation(_federatorOptions.FederatorAttributeConsumerServiceUrl)
 					.RemoveNameQualifierIfFormatEntity();
 
+				_federatorResponseService.ApplyOptionalResponseAlteration(responseXml);
+
 				await _federatorResponseService.SignAssertionAsync(responseXml);
 				_logger.LogDebug("Assertions Signed");
 

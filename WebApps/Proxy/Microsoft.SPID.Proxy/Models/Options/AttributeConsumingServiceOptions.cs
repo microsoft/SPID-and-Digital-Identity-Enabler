@@ -10,7 +10,11 @@ public class AttributeConsumingServiceOptions
     public int AttributeConsumingServiceDefaultValue { get; set; }
     public bool UpdateAssertionConsumerServiceUrl { get; set; }
     public List<string> ValidACS { get; set; }
-    public string AttrConsServIndexQueryStringParamName { get; set; }
-    public int CIEAttributeConsumingService { get; set; }
+    public List<string> CIEValidACS { get; set; }
+	public string AttrConsServIndexQueryStringParamName { get; set; }
+	public string CIEAttrConsServIndexQueryStringParamName { get; set; }
+
+	public int CIEAttributeConsumingService { get; set; }
     public int EIDASAttributeConsumingService { get; set; }
+    public bool DisableACSFromReferer { get; set; }
 }

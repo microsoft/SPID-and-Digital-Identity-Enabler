@@ -306,6 +306,24 @@ button#CIE-Exchange:hover {
     user-select: none;
 }
 
+button#eIDAS-Exchange {
+    background: url({Settings:CustomUiBlobStorageUrl}/spididp/eIDAS.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    color: transparent;
+    user-select: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 50px;
+}
+
+button#eIDAS-Exchange:hover {
+    color: transparent !important;
+    user-select: none;
+}
+
 .italia-it-button-icon img {
     height: 32px !important;
 }
@@ -359,7 +377,8 @@ button[id^="SPID-"] {
 #spidpf-button-container,
 #spidpg-button-container,
 #cie-button-container,
-#cns-button-container {
+#cns-button-container,
+#eidas-button-container {
     text-align: center;
 }
 

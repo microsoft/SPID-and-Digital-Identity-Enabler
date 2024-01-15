@@ -196,11 +196,12 @@ namespace CNS.Auth.Web.Services
 			{
 				InResponseTo = new Saml2Id(inResponseTo),
 				Recipient = new Uri(destination),
-				NotBefore = DateTime.UtcNow,
+				//NotBefore = DateTime.UtcNow,
 				NotOnOrAfter = DateTime.UtcNow.AddMinutes(60)
 			};
 			Saml2SubjectConfirmation subConfirmation = new Saml2SubjectConfirmation(Saml2Constants.ConfirmationMethods.Bearer, subConfirmationData);
 			securityToken.Assertion.Statements.Add(authStatement);
+			securityToken.Assertion.Subject.SubjectConfirmations.Clear();
 			securityToken.Assertion.Subject.SubjectConfirmations.Add(subConfirmation);
 			return securityToken;
 		}

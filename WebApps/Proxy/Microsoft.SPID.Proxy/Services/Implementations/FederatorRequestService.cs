@@ -13,7 +13,8 @@ public class FederatorRequestService : IFederatorRequestService
     private readonly ISAMLService _samlService;
     private readonly IIDPService _idpService;
     private readonly ILogger _logger;
-    private readonly FederatorOptions _federatorOptions;
+	private readonly CIEOptions _cieOptions;
+	private readonly FederatorOptions _federatorOptions;
     private readonly SPIDOptions _spidOptions;
     private readonly AttributeConsumingServiceOptions _attributeConsumingServiceOptions;
 
@@ -24,13 +25,15 @@ public class FederatorRequestService : IFederatorRequestService
         IOptions<FederatorOptions> federatorOptions,
         IOptions<SPIDOptions> spidOptions,
         IOptions<AttributeConsumingServiceOptions> attributeConsumingServiceOption,
-        IOptions<IDPMetadatasOptions> idpMetadatasOptions)
+        IOptions<IDPMetadatasOptions> idpMetadatasOptions,
+        IOptions<CIEOptions> cieOptions)
     {
         _spidService = spidService;
         _samlService = samlService;
         _idpService = idpService;
         _logger = logger;
-        _federatorOptions = federatorOptions.Value;
+		_cieOptions = cieOptions.Value;
+		_federatorOptions = federatorOptions.Value;
         _spidOptions = spidOptions.Value;
         _attributeConsumingServiceOptions = attributeConsumingServiceOption.Value;
     }
@@ -129,12 +132,13 @@ public class FederatorRequestService : IFederatorRequestService
 
         try
         {
-            var attributeConsumingService = federatorRequest.GetAttributeConsumingService(
-                _attributeConsumingServiceOptions.CIEAttributeConsumingService,
+            var attributeConsumingServiceIndex = federatorRequest.GetAttributeConsumingService(
+                _spidService.GetCIEAttributeConsumigServiceValue(refererQueryString,relayQueryString,wctxQueryString),
                 _attributeConsumingServiceOptions.EIDASAttributeConsumingService,
-                _spidService.GetACSValue(refererQueryString, relayQueryString, wctxQueryString)
+                _spidService.GetSPIDAttributeConsumigServiceValue(refererQueryString, relayQueryString, wctxQueryString)
             );
-            requestAsXml.SetAttributeConsumingService(attributeConsumingService);
+
+            requestAsXml.SetAttributeConsumingService(attributeConsumingServiceIndex);
 
             var idenityProviderUrl = _idpService.GetIDPUrl(federatorRequest.IdentityProvider);
             rootEl.SetAttribute("Destination", idenityProviderUrl);
@@ -143,7 +147,9 @@ public class FederatorRequestService : IFederatorRequestService
             string entityId = GetNewEntityId(federatorRequest);
             requestAsXml.ChangeIssuer(entityId);
 
-            var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString);
+            var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString, federatorRequest.IsCIE());
+            var comparison = _spidService.GetComparisonValue(refererQueryString, relayQueryString, wctxQueryString, federatorRequest.IsCIE());
+            
             //If no RequestedAuthnContext is already present, add it
             if (requestAsXml.GetElementsByTagName("RequestedAuthnContext", "*").Count == 0)
             {
@@ -157,7 +163,7 @@ public class FederatorRequestService : IFederatorRequestService
 
             _logger.LogDebug("Adding ForceAuthn attribute = 'true' due to SPIDL > 1");
             requestAsXml.SetForceAuthn()
-                .SetComparison()
+                .SetComparison(comparison)
                 .SetAuthnContextClassRefIfNotPresent(string.Format(_spidOptions.SPIDLUri, spidL));
 
             if (_attributeConsumingServiceOptions.UpdateAssertionConsumerServiceUrl)

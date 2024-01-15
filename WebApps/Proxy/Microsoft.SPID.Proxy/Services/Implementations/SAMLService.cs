@@ -37,7 +37,8 @@ public class SAMLService : ISAMLService
 
     public NameValueCollection GetRefererQueryString()
     {
-        return HttpUtility.ParseQueryString(_httpContextAccessor.HttpContext.Request.Headers["Referer"]);
+        Uri refererUri = new Uri(_httpContextAccessor.HttpContext.Request.Headers["Referer"]);
+        return HttpUtility.ParseQueryString(refererUri.Query);
     }
 
     public NameValueCollection GetRelayStateQueryString(NameValueCollection refererQueryString)
@@ -49,7 +50,7 @@ public class SAMLService : ISAMLService
             var questMarkIndex = relayState.IndexOf("?");
 
             relayQueryString = questMarkIndex > -1 ?
-                HttpUtility.ParseQueryString(relayState.Substring(questMarkIndex)) : null;
+                HttpUtility.ParseQueryString(relayState.Substring(questMarkIndex)) : HttpUtility.ParseQueryString(relayState);
         }
 
         return relayQueryString;
@@ -86,7 +87,8 @@ public class SAMLService : ISAMLService
         {
             var questMarkIndex = wctx.IndexOf("?");
 
-            wctxQueryString = questMarkIndex > -1 ? HttpUtility.ParseQueryString(wctx.Substring(questMarkIndex)) : null;
+            wctxQueryString = questMarkIndex > -1 ? HttpUtility.ParseQueryString(wctx.Substring(questMarkIndex)) 
+                : HttpUtility.ParseQueryString(wctx);
 
         }
 
