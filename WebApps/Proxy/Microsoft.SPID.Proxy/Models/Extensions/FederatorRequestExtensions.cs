@@ -14,14 +14,14 @@ public static class FederatorRequestExtensions
 
     public static bool IsCIE(this FederatorRequest federatorRequest)
     {
-        return federatorRequest.IdentityProvider.Equals("CIE", StringComparison.InvariantCultureIgnoreCase)
-            || federatorRequest.IdentityProvider.Equals("CIETEST", StringComparison.InvariantCultureIgnoreCase);
+        return federatorRequest.IdentityProvider.Equals("CIE", StringComparison.OrdinalIgnoreCase)
+            || federatorRequest.IdentityProvider.Equals("CIETEST", StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool IsEIDAS(this FederatorRequest federatorRequest)
     {
-        return federatorRequest.IdentityProvider.Equals("EIDAS", StringComparison.InvariantCultureIgnoreCase)
-            || federatorRequest.IdentityProvider.Equals("EIDASTEST", StringComparison.InvariantCultureIgnoreCase);
+        return federatorRequest.IdentityProvider.Equals("EIDAS", StringComparison.OrdinalIgnoreCase)
+            || federatorRequest.IdentityProvider.Equals("EIDASTEST", StringComparison.OrdinalIgnoreCase);
     }
 
     public static int GetAttributeConsumingService(this FederatorRequest federatorRequest,

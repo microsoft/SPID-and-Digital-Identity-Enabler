@@ -52,6 +52,7 @@ builder.Services.Configure<AttributeConsumingServiceOptions>(options => {
 	var acsSection = builder.Configuration.GetSection("attributeConsumingService");
 	acsSection.Bind(options);
 	options.ValidACS = acsSection["validACS"].Split(",").ToList();
+	options.CIEValidACS= acsSection["CIEvalidACS"].Split(",").ToList();
 });
 
 builder.Services.Configure<CertificateOptions>(builder.Configuration.GetSection("Certificate"));
