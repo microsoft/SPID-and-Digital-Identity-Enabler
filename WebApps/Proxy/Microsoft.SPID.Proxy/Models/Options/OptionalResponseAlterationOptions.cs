@@ -9,5 +9,7 @@ namespace Microsoft.SPID.Proxy.Models.Options
 	{
 		public bool AlterDateOfBirth { get; set; }
 		public string DateOfBirthFormat { get; set; } = "xs:date";
+        public bool ExtractAuthnContextClassRef { get; set; }
+		public string AuthnContextClassRefClaimName { get; set; } = "spidLevel";
     }
 }

@@ -251,11 +251,55 @@ public class FederatorResponseService : IFederatorResponseService
 
 	public void ApplyOptionalResponseAlteration(XmlDocument doc)
 	{
-		if (!_optionalResponseAlterationOptions.AlterDateOfBirth)
-			return;
+		if (_optionalResponseAlterationOptions.AlterDateOfBirth)
+			AlterDateOfBirthType(doc);
 
+		if (_optionalResponseAlterationOptions.ExtractAuthnContextClassRef)
+			ExtractAuthnContextClassRef(doc);
+	}
+
+	private void ExtractAuthnContextClassRef(XmlDocument doc)
+	{
+		var authnContextClassRefNodes = doc.GetElementsByTagName("AuthnContextClassRef", "*");
+		if (authnContextClassRefNodes == null || authnContextClassRefNodes.Count == 0)
+		{
+			_logger.LogDebug("AuthnContextClassRef not found.");
+			return;
+		}
+			
+		var attributeStatement = doc.GetElementsByTagName("AttributeStatement", "*")?[0];
+		var firstAttribute = doc.GetElementsByTagName("Attribute", "*")?[0];
+		var firstAttributeValue = doc.GetElementsByTagName("AttributeValue", "*")?[0];
+
+		if (firstAttribute == null || attributeStatement == null || firstAttributeValue == null)
+		{
+			_logger.LogWarning("AttributeStatement, Attribute or AttributeValue tag not found.");
+			//should never happen
+			return;
+		};
+
+		var newAttribute = firstAttribute.CloneNode(false); //cloning to carry over the attributes, namespaces, etc
+		newAttribute.Attributes["Name"].Value = _optionalResponseAlterationOptions.AuthnContextClassRefClaimName;
+
+		var newAttributeValue = firstAttributeValue.CloneNode(false); //cloning to carry over the attributes, namespaces, etc
+		var type = newAttributeValue.Attributes["xsi:type"];
+		if (type != null)
+			type.Value = "xs:string";
+
+		newAttributeValue.InnerText = authnContextClassRefNodes[0].InnerText;
+
+		newAttribute.AppendChild(newAttributeValue);
+		attributeStatement.AppendChild(newAttribute);
+
+		_logger.LogInformation(LoggingEvents.EXTRACTED_AUTHNCONTEXTCLASSREF,
+			"AuthnContextClassRef extracted and issued as claim '{authnContextClassRefClaimName}'",
+			_optionalResponseAlterationOptions.AuthnContextClassRefClaimName);
+	}
+	private void AlterDateOfBirthType(XmlDocument doc)
+	{
 		var attributes = doc.GetElementsByTagName("Attribute", "*"); //some idps use saml2, others saml, hence we use * as namespace
 		XmlNode dateOfBirth = null;
+
 		foreach (XmlNode node in attributes)
 		{
 			var nameAttr = node.Attributes["Name"];
@@ -274,7 +318,7 @@ public class FederatorResponseService : IFederatorResponseService
 		}
 
 		var attrValue = dateOfBirth.FirstChild;
-		if (attrValue==null || attrValue.LocalName != "AttributeValue")
+		if (attrValue == null || attrValue.LocalName != "AttributeValue")
 		{
 			_logger.LogDebug("dateOfBirth doesn't contain AttributeValue.");
 			return;
