@@ -31,5 +31,6 @@ namespace Microsoft.SPID.Proxy.Models
 		public const int ERROR_INVALID_SAML_RESPONSE_SIGNATURE = 9005;
 		public const int ERROR_SAML_RESPONSE_VALIDATION_FAILED = 9006;
 		public const int ERROR_ASSERTION_CONSUMER_GENERIC_ERROR = 9007;
+		public const int ERROR_OPTIONAL_RESPONSE_ALTERATION = 9008;
 	}
 }

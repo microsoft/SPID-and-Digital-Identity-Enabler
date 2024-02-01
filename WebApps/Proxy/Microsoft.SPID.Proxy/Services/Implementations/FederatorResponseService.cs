@@ -251,11 +251,18 @@ public class FederatorResponseService : IFederatorResponseService
 
 	public void ApplyOptionalResponseAlteration(XmlDocument doc)
 	{
-		if (_optionalResponseAlterationOptions.AlterDateOfBirth)
-			AlterDateOfBirthType(doc);
+		try
+		{
+			if (_optionalResponseAlterationOptions.AlterDateOfBirth)
+				AlterDateOfBirthType(doc);
 
-		if (_optionalResponseAlterationOptions.ExtractAuthnContextClassRef)
-			ExtractAuthnContextClassRef(doc);
+			if (_optionalResponseAlterationOptions.ExtractAuthnContextClassRef)
+				ExtractAuthnContextClassRef(doc);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError(LoggingEvents.REDIRECT_URL_CREATED, e, "An error occurred applying the optional response alterations.");
+		}
 	}
 
 	private void ExtractAuthnContextClassRef(XmlDocument doc)
@@ -280,7 +287,7 @@ public class FederatorResponseService : IFederatorResponseService
 
 		var newAttribute = firstAttribute.CloneNode(false); //cloning to carry over the attributes, namespaces, etc
 		newAttribute.Attributes["Name"].Value = _optionalResponseAlterationOptions.AuthnContextClassRefClaimName;
-
+		
 		var newAttributeValue = firstAttributeValue.CloneNode(false); //cloning to carry over the attributes, namespaces, etc
 		var type = newAttributeValue.Attributes["xsi:type"];
 		if (type != null)
