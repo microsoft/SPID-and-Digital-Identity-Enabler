@@ -17,6 +17,8 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   BuildAndRelease:
+    permissions:
+      contents: write
     env:
       SOLUTION_FILE: "Microsoft.SPID.Proxy.sln"
       PUBLISH_FOLDER: "_publish"
