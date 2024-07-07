@@ -55,8 +55,26 @@ namespace CNS.Auth.Web.Services
 			Claim commonName = new Claim("commonName", CN);
 			var subjectRawData = cert.SubjectName.RawData;
 
-			var SN = new AsnEncodedData("SN", subjectRawData).Format(false);
-			var G = new AsnEncodedData("G", subjectRawData).Format(false);
+			string SN, G;
+
+			if (!cert.Subject.Contains("SN="))
+			{
+				SN = "Unknown";
+			}
+			else
+			{
+				SN = new AsnEncodedData("SN", subjectRawData).Format(false);
+			}
+
+			if (!cert.Subject.Contains("G="))
+			{
+				G = "Unknown";
+			}
+			else
+			{
+				G = new AsnEncodedData("G", subjectRawData).Format(false);
+			}
+
 			var OU = new AsnEncodedData("OU", subjectRawData).Format(false);
 			var O = new AsnEncodedData("O", subjectRawData).Format(false);
 			var C = new AsnEncodedData("C", subjectRawData).Format(false);
