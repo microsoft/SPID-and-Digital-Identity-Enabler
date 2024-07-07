@@ -19,6 +19,7 @@ jobs:
     env:
       SOLUTION_FILE: "CNS.Auth.Web.sln"
       PUBLISH_FOLDER: "_publish"
+      ARTIFACT_NAME: CNSProxy
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     defaults:
@@ -36,3 +37,9 @@ jobs:
 
       - name: publish
         run: dotnet publish -c Release -o $PUBLISH_FOLDER $SOLUTION_FILE
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ github.workspace }}/WebApps/CNS.Auth.Web/${{ env.PUBLISH_FOLDER }}
