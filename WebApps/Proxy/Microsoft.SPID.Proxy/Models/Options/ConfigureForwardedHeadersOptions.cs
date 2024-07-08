@@ -38,7 +38,7 @@ namespace Microsoft.SPID.Proxy.Models.Options
 					var prefix = networkSplit[0];
 					var prefixLength = int.Parse(networkSplit[1]);
 
-					options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse(prefix), prefixLength));
+					options.KnownNetworks.Add(new AspNetCore.HttpOverrides.IPNetwork(IPAddress.Parse(prefix), prefixLength));
 				}
 			}
 
