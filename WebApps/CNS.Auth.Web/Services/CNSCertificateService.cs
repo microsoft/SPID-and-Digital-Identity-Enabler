@@ -226,8 +226,8 @@ namespace CNS.Auth.Web.Services
 		public bool LogCertificate { get; set; } = true;
 		public bool LogSubject { get; set; } = true;
 		public bool BlockIfMissingGivenNameOrSurname { get; set; } = false;
-		public string GivenNamePlaceholder { get; set; }
-        public string SurnamePlaceholder { get; set; }
+		public string GivenNamePlaceholder { get; set; } = "Utente";
+		public string SurnamePlaceholder { get; set; } = "Non disponibile";
 
     }
 }
