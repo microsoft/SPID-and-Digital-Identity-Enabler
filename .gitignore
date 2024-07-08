@@ -286,3 +286,4 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+/WebApps/CNS.Auth.Web/Properties/ServiceDependencies/cnsproxy-mingiustizia-coll - Web Deploy/profile.arm.json
