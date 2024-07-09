@@ -2,11 +2,22 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*@
-
 @{
-    ViewData["Title"] = "403 Unauthorized";
+    ViewData["Title"] = "Errore accesso CNS";
+    Layout = "";
 }
+<h1>Si è verificato un errore durante l'accesso con CNS</h1>
+<p class="pt-5">Il problema e' stato causato da uno dei seguenti motivi:</p>
+<ul>
+    <li>E' stato selezionato un certificato non valido ai fini CNS.</li>
+    <li>La CNS potrebbe non essere inserita bene nel lettore oppure non viene letta anche se inserita.</li>
+    <li>Viene chiesto il PIN di sblocco? Se non viene chiesto, questo e' un segno che la CNS non viene letta.</li>
+    <li>Provare a chiudere e riaprire il browser, provare a riavviare il PC.</li>
+    <li>La CNS potrebbe essere scaduta, o potrebbe essere stata bloccata o revocata.</li>
+    <li>Prova ad eseguire l'autenticazione con un browser in modalità incognito (modalità privata)</li>
+</ul>
 
-<h1>403 Unauthorized</h1>
-<p>Your request is unauthorized. Please check the certificate you selected, since the submitted one is not a valid CNS certificate</p>
-
+<ul>
+    <li><b>Timestamp UTC: </b>@DateTime.UtcNow.ToString()</li>
+    <li><b>RequestId: </b>@Context.TraceIdentifier</li>
+</ul>
