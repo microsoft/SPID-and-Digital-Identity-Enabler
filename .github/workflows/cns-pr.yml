@@ -20,6 +20,7 @@ jobs:
       SOLUTION_FILE: "CNS.Auth.Web.sln"
       PUBLISH_FOLDER: "_publish"
       ARTIFACT_NAME: CNSProxy
+      RELEASE_VERSION: 8.0.${{ github.run_number}}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     defaults:
@@ -37,8 +38,7 @@ jobs:
           dotnet-quality: ga
 
       - name: publish
-        run: dotnet publish -c Release -o $PUBLISH_FOLDER $SOLUTION_FILE
-
+        run: dotnet publish -c Release -o $PUBLISH_FOLDER -p:Version=$RELEASE_VERSION $SOLUTION_FILE
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
