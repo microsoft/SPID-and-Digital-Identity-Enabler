@@ -49,14 +49,12 @@ $metadatas = $json.metadatas
 $securityProtocols = [System.Net.SecurityProtocolType]::Tls -bor [System.Net.SecurityProtocolType]::Tls11 -bor [System.Net.SecurityProtocolType]::Tls12
 [System.Net.ServicePointManager]::SecurityProtocol = $securityProtocols
 
-$wc = New-Object System.Net.WebClient
-
 foreach ($m in $metadatas) {
     $idpName = $m.providername.ToLower()
     $supportsLegalSubject = ($m.supportsLegalSubject -eq $true) -and !([string]::IsNullOrWhiteSpace($additionalSPIDProxyBaseUrl))
     
     $file = "$PWD/$idpName-download.xml"
-    $wc.DownloadFile($m.providermetadata, $file)
+    Invoke-WebRequest -Uri $m.providermetadata -OutFile $file -Headers @{"User-Agent"="SPIDProxy/8.0.0"}
 
     $xml = [xml](Get-Content -Raw -Path $file)
     if ($null -eq $xml) {
