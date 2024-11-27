@@ -274,7 +274,7 @@ public class FederatorResponseService : IFederatorResponseService
 		}
 
 		var attrValue = dateOfBirth.FirstChild;
-		if (attrValue==null || attrValue.LocalName != "AttributeValue")
+		if (attrValue == null || attrValue.LocalName != "AttributeValue")
 		{
 			_logger.LogDebug("dateOfBirth doesn't contain AttributeValue.");
 			return;
@@ -284,10 +284,18 @@ public class FederatorResponseService : IFederatorResponseService
 
 		if (type == null)
 		{
-			type = doc.CreateAttribute("xsi:type");
+			_logger.LogDebug("dateOfBirth's AttributeValue doesn't have xsi:type attribute.");
+
+			type = doc.CreateAttribute("xsi:type", "http://www.w3.org/2001/XMLSchema-instance");
+			_logger.LogDebug("Attribute xsi:type created.");
+			
+			attrValue.Attributes.Append(type);
+			_logger.LogDebug("Attribute xsi:type appended to dateOfBirth's AttributeValue.");
 		}
 
 		type.Value = _optionalResponseAlterationOptions.DateOfBirthFormat;
+		_logger.LogDebug("Attribute xsi:type set to {dateOfBirthType}", type.Value);
+
 		_logger.LogInformation(LoggingEvents.ALTERED_DATEOFBIRTH_TYPE, "dateOfBirth type changed to {dateOfBirthType}.",
 			_optionalResponseAlterationOptions.DateOfBirthFormat);
 	}
