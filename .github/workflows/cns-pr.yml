@@ -40,7 +40,7 @@ jobs:
       - name: publish
         run: dotnet publish -c Release -o $PUBLISH_FOLDER -p:Version=$RELEASE_VERSION $SOLUTION_FILE
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ github.workspace }}/WebApps/CNS.Auth.Web/${{ env.PUBLISH_FOLDER }}
