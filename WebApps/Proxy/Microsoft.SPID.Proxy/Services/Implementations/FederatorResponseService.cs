@@ -251,52 +251,50 @@ public class FederatorResponseService : IFederatorResponseService
 
 	public void ApplyOptionalResponseAlteration(XmlDocument doc)
 	{
-		if (!_optionalResponseAlterationOptions.AlterDateOfBirth)
-			return;
+		if (!_optionalResponseAlterationOptions.AlterDateOfBirth) return;
 
-		var attributes = doc.GetElementsByTagName("Attribute", "*"); //some idps use saml2, others saml, hence we use * as namespace
-		XmlNode dateOfBirth = null;
-		foreach (XmlNode node in attributes)
-		{
-			var nameAttr = node.Attributes["Name"];
-
-			if (nameAttr != null && nameAttr.Value == "dateOfBirth")
-			{
-				dateOfBirth = node;
-				break;
-			}
-		}
-
-		if (dateOfBirth == null)
+		var dateOfBirthNode = FindDateOfBirthNode(doc);
+		if (dateOfBirthNode == null)
 		{
 			_logger.LogDebug("dateOfBirth attribute not found.");
 			return;
 		}
 
-		var attrValue = dateOfBirth.FirstChild;
-		if (attrValue == null || attrValue.LocalName != "AttributeValue")
+		var attributeValueNode = FindAttributeValueNode(dateOfBirthNode);
+		if (attributeValueNode == null)
 		{
 			_logger.LogDebug("dateOfBirth doesn't contain AttributeValue.");
 			return;
 		}
 
-		var type = attrValue.Attributes["xsi:type"];
+		SetTypeAttribute(doc, attributeValueNode);
+	}
 
-		if (type == null)
+	private XmlNode FindDateOfBirthNode(XmlDocument doc)
+	{
+		var attributes = doc.GetElementsByTagName("Attribute", "*");
+		return attributes.Cast<XmlNode>().FirstOrDefault(node => node.Attributes["Name"]?.Value == "dateOfBirth");
+	}
+
+	private XmlNode FindAttributeValueNode(XmlNode dateOfBirthNode)
+	{
+		return dateOfBirthNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(node => node.LocalName == "AttributeValue");
+	}
+
+	private void SetTypeAttribute(XmlDocument doc, XmlNode attrValueNode)
+	{
+		var typeAttr = attrValueNode.Attributes["xsi:type"];
+		if (typeAttr == null)
 		{
 			_logger.LogDebug("dateOfBirth's AttributeValue doesn't have xsi:type attribute.");
-
-			type = doc.CreateAttribute("xsi:type", "http://www.w3.org/2001/XMLSchema-instance");
-			_logger.LogDebug("Attribute xsi:type created.");
-			
-			attrValue.Attributes.Append(type);
-			_logger.LogDebug("Attribute xsi:type appended to dateOfBirth's AttributeValue.");
+			typeAttr = doc.CreateAttribute("xsi:type", "http://www.w3.org/2001/XMLSchema-instance");
+			attrValueNode.Attributes.Append(typeAttr);
+			_logger.LogDebug("Attribute xsi:type created and appended to dateOfBirth's AttributeValue.");
 		}
 
-		type.Value = _optionalResponseAlterationOptions.DateOfBirthFormat;
-		_logger.LogDebug("Attribute xsi:type set to {dateOfBirthType}", type.Value);
-
-		_logger.LogInformation(LoggingEvents.ALTERED_DATEOFBIRTH_TYPE, "dateOfBirth type changed to {dateOfBirthType}.",
-			_optionalResponseAlterationOptions.DateOfBirthFormat);
+		typeAttr.Value = _optionalResponseAlterationOptions.DateOfBirthFormat;
+		_logger.LogDebug("Attribute xsi:type set to {dateOfBirthType}", typeAttr.Value);
+		_logger.LogInformation(LoggingEvents.ALTERED_DATEOFBIRTH_TYPE, "dateOfBirth type changed to {dateOfBirthType}.", _optionalResponseAlterationOptions.DateOfBirthFormat);
 	}
+
 }
