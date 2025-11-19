@@ -108,6 +108,7 @@ public class FederatorResponseService : IFederatorResponseService
 		XmlDocument metadataDocument = new XmlDocument();
 		string metadataXml = null;
 		string cacheKey = $"Metadata_{fullIssuer}";
+		bool fetchedFromHttp = false;
 
 		if (_cache != null)
 		{
@@ -123,25 +124,21 @@ public class FederatorResponseService : IFederatorResponseService
 		{
 			using var httpClient = _httpClientFactory.CreateClient("default");
 			metadataXml = await httpClient.GetStringAsync(metadataUrl);
-			
-			// Parse and validate metadata before caching to ensure it's valid XML
-			metadataDocument.LoadXml(metadataXml);
-			
-			if (_cache != null)
-			{
-				var options = new DistributedCacheEntryOptions()
-				{
-					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_idpMetadatasOptions.CacheAbsoluteExpirationInMins),
-					SlidingExpiration = null
-				};
-				_logger.LogDebug("Storing metadata for issuer {issuer} in cache", fullIssuer);
-				await _cache.SetStringAsync(cacheKey, metadataXml, options);
-			}
+			fetchedFromHttp = true;
 		}
-		else
+
+		// Parse and validate metadata before caching to ensure it's valid XML
+		metadataDocument.LoadXml(metadataXml);
+
+		if (_cache != null && fetchedFromHttp)
 		{
-			// Load cached metadata
-			metadataDocument.LoadXml(metadataXml);
+			var options = new DistributedCacheEntryOptions()
+			{
+				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_idpMetadatasOptions.CacheAbsoluteExpirationInMins),
+				SlidingExpiration = null
+			};
+			_logger.LogDebug("Storing metadata for issuer {issuer} in cache", fullIssuer);
+			await _cache.SetStringAsync(cacheKey, metadataXml, options);
 		}
 
 		var certificates = metadataDocument.GetCertificates();
