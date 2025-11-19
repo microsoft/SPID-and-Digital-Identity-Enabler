@@ -123,6 +123,10 @@ public class FederatorResponseService : IFederatorResponseService
 		{
 			using var httpClient = _httpClientFactory.CreateClient("default");
 			metadataXml = await httpClient.GetStringAsync(metadataUrl);
+			
+			// Parse and validate metadata before caching to ensure it's valid XML
+			metadataDocument.LoadXml(metadataXml);
+			
 			if (_cache != null)
 			{
 				var options = new DistributedCacheEntryOptions()
@@ -134,9 +138,11 @@ public class FederatorResponseService : IFederatorResponseService
 				await _cache.SetStringAsync(cacheKey, metadataXml, options);
 			}
 		}
-
-
-		metadataDocument.LoadXml(metadataXml);
+		else
+		{
+			// Load cached metadata
+			metadataDocument.LoadXml(metadataXml);
+		}
 
 		var certificates = metadataDocument.GetCertificates();
 
