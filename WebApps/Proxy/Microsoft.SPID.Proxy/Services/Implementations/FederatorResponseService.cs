@@ -130,6 +130,8 @@ public class FederatorResponseService : IFederatorResponseService
 		// Parse and validate metadata before caching to ensure it's valid XML
 		metadataDocument.LoadXml(metadataXml);
 
+		// Only cache if we fetched from HTTP (not from cache) and parsing succeeded
+		// The fetchedFromHttp flag prevents re-caching metadata that was already retrieved from cache
 		if (_cache != null && fetchedFromHttp)
 		{
 			var options = new DistributedCacheEntryOptions()
