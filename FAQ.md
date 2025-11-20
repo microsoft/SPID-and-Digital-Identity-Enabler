@@ -7,7 +7,7 @@ This document provides an answer for the most common questions gathered from our
 ### Quanto costa la soluzione?
 Lato Azure, la soluzione prevede i seguenti costi:
 - AAD B2C si paga per MAU e fino a 50000 MAU è completamente free. 1 MAU = 1 Account UNIVOCO che si logga almeno una volta in un mese. Tommaso si logga 500 mila volte con il suo account SPID Aruba? Conta come 1 MAU. Ogni MAU oltre i 50000 costa circa 0,003€ (3 millesimi di Euro)
-- App Service per lo SPIDProxy: per HA si consigliano almeno due istanze, il sizing è ovviamente relativo al volume di utenti che ci si aspetta. Consigliamo ALMENO S1. Supponendo 2 istanze S1 = 61 * 2 = 122 €/mese. Lo SPIDProxy può essere installato anche su altri servizi PaaS Azure quali Azure Container Instances, AKS, etc.
+- App Service per lo SPIDProxy: per HA si consigliano almeno due istanze, il sizing è ovviamente relativo al volume di utenti che ci si aspetta. Consigliamo ALMENO S1. Supponendo 2 istanze S1 = 61 * 2 = 122 €/mese. Lo SPIDProxy può essere installato anche su altri servizi PaaS Azure quali Azure Container Instances, AKS, etc. Su App Service, la best practice è avere AvZone quindi minimo 3 istanze P0v3 che consentirebbero anche l'uso di una reservation per risparmio economico.
 - Storage Account: costo trascurabile di pochissimi € al mese.
 - Application Insights: il costo è proporzionale all'uso dello SPIDProxy in quanto più richieste = più telemetria. Si parla di qualche €/mese
 
