@@ -76,12 +76,20 @@ public class ProxyController : Controller
 			// Validate SAMLRequest signature from Federator
 			if (!_technicalChecksOptions.SkipSignaturesValidation)
 			{
-				if (!await _samlService.ValidateFederatorRequestSignature(request))
+				try
 				{
-					_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_REQUEST_SIGNATURE, "Invalid SAMLRequest signature from Federator");
-					return BadRequest();
+					if (!await _samlService.ValidateFederatorRequestSignature(request))
+					{
+						_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_REQUEST_SIGNATURE, "Invalid SAMLRequest signature from Federator");
+						return BadRequest();
+					}
+					_logger.LogInformation(LoggingEvents.SAML_REQUEST_SIGNATURE_VALIDATED, "SAMLRequest signature validated");
 				}
-				_logger.LogInformation(LoggingEvents.SAML_REQUEST_SIGNATURE_VALIDATED, "SAMLRequest signature validated");
+				catch (InvalidOperationException ex)
+				{
+					_logger.LogError(ex, "Configuration error during SAMLRequest signature validation");
+					throw;
+				}
 			}
 
 			var ID = requestAsXml.GetRequestID();

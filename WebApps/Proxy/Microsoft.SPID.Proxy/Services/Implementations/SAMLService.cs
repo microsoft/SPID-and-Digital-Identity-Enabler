@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Microsoft.SPID.Proxy.Services.Implementations;
 
@@ -19,13 +20,15 @@ public class SAMLService : ISAMLService
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly FederatorOptions _federatorOptions;
+    private readonly IDistributedCache _cache;
 
     public SAMLService(ICertificateService certificateService,
         IConfiguration configuration,
         IHttpContextAccessor httpContextAccessor,
         ILogger<SAMLService> logger,
         IHttpClientFactory httpClientFactory,
-        IOptions<FederatorOptions> federatorOptions)
+        IOptions<FederatorOptions> federatorOptions,
+        IDistributedCache cache)
     {
         _certificateService = certificateService;
         _configuration = configuration;
@@ -33,6 +36,7 @@ public class SAMLService : ISAMLService
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _federatorOptions = federatorOptions.Value;
+        _cache = cache;
     }
 
     public string GetAttributeConsumerService()
@@ -106,6 +110,12 @@ public class SAMLService : ISAMLService
         return _httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Referer");
     }
 
+    /// <summary>
+    /// Validates the signature of an incoming SAMLRequest from the Federator.
+    /// </summary>
+    /// <param name="federatorRequest">The FederatorRequest containing the SAMLRequest and signature parameters.</param>
+    /// <returns>True if the signature is valid; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the Federator MetadataUrl is not configured.</exception>
     public async Task<bool> ValidateFederatorRequestSignature(FederatorRequest federatorRequest)
     {
         try
@@ -117,6 +127,21 @@ public class SAMLService : ISAMLService
                 return false;
             }
 
+            // Validate SigAlg parameter
+            if (string.IsNullOrEmpty(federatorRequest.SigAlg))
+            {
+                _logger.LogWarning("SAMLRequest SigAlg parameter is missing");
+                return false;
+            }
+
+            // Decode and validate that SigAlg matches expected algorithm
+            string decodedSigAlg = HttpUtility.UrlDecode(federatorRequest.SigAlg);
+            if (!decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("SAMLRequest SigAlg '{sigAlg}' is not supported. Expected rsa-sha256", decodedSigAlg);
+                return false;
+            }
+
             // Get Federator metadata to extract public certificate
             if (string.IsNullOrWhiteSpace(_federatorOptions.MetadataUrl))
             {
@@ -124,11 +149,62 @@ public class SAMLService : ISAMLService
                 throw new InvalidOperationException("Federator MetadataUrl is not configured");
             }
 
-            using var httpClient = _httpClientFactory.CreateClient("default");
-            string metadataXml = await httpClient.GetStringAsync(_federatorOptions.MetadataUrl);
-            
+            // Try to get metadata from cache first
+            string metadataXml = null;
+            string cacheKey = "FederatorMetadata";
+            bool fetchedFromHttp = false;
+
+            if (_cache != null)
+            {
+                var metadataXmlFromCache = await _cache.GetStringAsync(cacheKey);
+                if (!string.IsNullOrWhiteSpace(metadataXmlFromCache))
+                {
+                    _logger.LogDebug("Federator metadata retrieved from cache");
+                    metadataXml = metadataXmlFromCache;
+                }
+            }
+
+            // If not in cache, fetch from HTTP
+            if (_cache == null || string.IsNullOrWhiteSpace(metadataXml))
+            {
+                try
+                {
+                    using var httpClient = _httpClientFactory.CreateClient("default");
+                    metadataXml = await httpClient.GetStringAsync(_federatorOptions.MetadataUrl);
+                    fetchedFromHttp = true;
+                    _logger.LogDebug("Federator metadata fetched from {metadataUrl}", _federatorOptions.MetadataUrl);
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError(ex, "Failed to fetch Federator metadata from {metadataUrl}", _federatorOptions.MetadataUrl);
+                    return false;
+                }
+            }
+
             XmlDocument metadataDocument = new XmlDocument();
-            metadataDocument.LoadXml(metadataXml);
+            metadataDocument.PreserveWhitespace = true;
+            
+            try
+            {
+                metadataDocument.LoadXml(metadataXml);
+            }
+            catch (XmlException ex)
+            {
+                _logger.LogError(ex, "Failed to parse Federator metadata XML");
+                return false;
+            }
+
+            // Cache metadata if it was fetched from HTTP
+            if (_cache != null && fetchedFromHttp)
+            {
+                var options = new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(120),
+                    SlidingExpiration = null
+                };
+                _logger.LogDebug("Storing Federator metadata in cache");
+                await _cache.SetStringAsync(cacheKey, metadataXml, options);
+            }
 
             // Extract certificates from metadata
             var certificates = metadataDocument.GetCertificates();
@@ -140,6 +216,7 @@ public class SAMLService : ISAMLService
             }
 
             // Reconstruct the signed string - must match the order used when signing
+            // Note: RelayState and SigAlg in FederatorRequest are already UpperCaseUrlEncoded
             string stringToVerify = string.IsNullOrEmpty(federatorRequest.RelayState)
                 ? $"SAMLRequest={federatorRequest.SAMLRequest}&SigAlg={federatorRequest.SigAlg}"
                 : $"SAMLRequest={federatorRequest.SAMLRequest}&RelayState={federatorRequest.RelayState}&SigAlg={federatorRequest.SigAlg}";
@@ -163,9 +240,14 @@ public class SAMLService : ISAMLService
             _logger.LogWarning("SAMLRequest signature could not be validated with any certificate from Federator metadata");
             return false;
         }
+        catch (InvalidOperationException)
+        {
+            // Re-throw configuration errors
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error validating SAMLRequest signature");
+            _logger.LogError(ex, "Unexpected error validating SAMLRequest signature");
             return false;
         }
     }
