@@ -17,6 +17,7 @@ namespace Microsoft.SPID.Proxy.Models
 		public const int PROXY_INDEX_INVOKED = 5006;
 		public const int INCOMING_SAML_RESPONSE_DECODED = 5007;
 		public const int ALTERED_DATEOFBIRTH_TYPE = 5008;
+		public const int SAML_REQUEST_SIGNATURE_VALIDATED = 5009;
 
 
 
@@ -29,5 +30,6 @@ namespace Microsoft.SPID.Proxy.Models
 		public const int ERROR_INVALID_SAML_RESPONSE_SIGNATURE = 9005;
 		public const int ERROR_SAML_RESPONSE_VALIDATION_FAILED = 9006;
 		public const int ERROR_ASSERTION_CONSUMER_GENERIC_ERROR = 9007;
+		public const int ERROR_INVALID_SAML_REQUEST_SIGNATURE = 9008;
 	}
 }
