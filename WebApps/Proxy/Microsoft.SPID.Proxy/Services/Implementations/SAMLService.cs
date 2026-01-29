@@ -142,21 +142,15 @@ public class SAMLService : ISAMLService
             // Decode and validate that SigAlg is a supported algorithm
             // We support RSA-SHA256, RSA-SHA1, and RSA-SHA512 per SAML specifications
             string decodedSigAlg = HttpUtility.UrlDecode(federatorRequest.SigAlg);
-            HashAlgorithmName hashAlgorithm;
-            
-            if (decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", StringComparison.OrdinalIgnoreCase))
+            HashAlgorithmName hashAlgorithm = decodedSigAlg.ToLowerInvariant() switch
             {
-                hashAlgorithm = HashAlgorithmName.SHA256;
-            }
-            else if (decodedSigAlg.Equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", StringComparison.OrdinalIgnoreCase))
-            {
-                hashAlgorithm = HashAlgorithmName.SHA1;
-            }
-            else if (decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512", StringComparison.OrdinalIgnoreCase))
-            {
-                hashAlgorithm = HashAlgorithmName.SHA512;
-            }
-            else
+                "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" => HashAlgorithmName.SHA256,
+                "http://www.w3.org/2000/09/xmldsig#rsa-sha1" => HashAlgorithmName.SHA1,
+                "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" => HashAlgorithmName.SHA512,
+                _ => default
+            };
+
+            if (hashAlgorithm == default(HashAlgorithmName))
             {
                 _logger.LogWarning("SAMLRequest SigAlg '{sigAlg}' is not supported. Supported algorithms: rsa-sha256, rsa-sha1, rsa-sha512", decodedSigAlg);
                 return false;
@@ -244,6 +238,7 @@ public class SAMLService : ISAMLService
             var signatureBytes = Convert.FromBase64String(HttpUtility.UrlDecode(federatorRequest.Signature));
 
             // Try to verify signature with each certificate from Federator metadata
+            // Note: GetRSAPublicKey() and VerifyData are cross-platform compatible in .NET (Windows/Linux)
             foreach (var cert in certificates)
             {
                 using (RSA rsa = cert.GetRSAPublicKey())
