@@ -14,12 +14,15 @@ namespace Microsoft.SPID.Proxy.Services.Implementations;
 
 public class SAMLService : ISAMLService
 {
+    private const string FEDERATOR_METADATA_CACHE_KEY = "FederatorMetadata";
+    
     private readonly ICertificateService _certificateService;
     private readonly IConfiguration _configuration;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly FederatorOptions _federatorOptions;
+    private readonly FederatorRequestValidationOptions _federatorRequestValidationOptions;
     private readonly IDistributedCache _cache;
 
     public SAMLService(ICertificateService certificateService,
@@ -28,6 +31,7 @@ public class SAMLService : ISAMLService
         ILogger<SAMLService> logger,
         IHttpClientFactory httpClientFactory,
         IOptions<FederatorOptions> federatorOptions,
+        IOptions<FederatorRequestValidationOptions> federatorRequestValidationOptions,
         IDistributedCache cache)
     {
         _certificateService = certificateService;
@@ -36,6 +40,7 @@ public class SAMLService : ISAMLService
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _federatorOptions = federatorOptions.Value;
+        _federatorRequestValidationOptions = federatorRequestValidationOptions.Value;
         _cache = cache;
     }
 
@@ -134,11 +139,26 @@ public class SAMLService : ISAMLService
                 return false;
             }
 
-            // Decode and validate that SigAlg matches expected algorithm
+            // Decode and validate that SigAlg is a supported algorithm
+            // We support RSA-SHA256, RSA-SHA1, and RSA-SHA512 per SAML specifications
             string decodedSigAlg = HttpUtility.UrlDecode(federatorRequest.SigAlg);
-            if (!decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", StringComparison.OrdinalIgnoreCase))
+            HashAlgorithmName hashAlgorithm;
+            
+            if (decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.LogWarning("SAMLRequest SigAlg '{sigAlg}' is not supported. Expected rsa-sha256", decodedSigAlg);
+                hashAlgorithm = HashAlgorithmName.SHA256;
+            }
+            else if (decodedSigAlg.Equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", StringComparison.OrdinalIgnoreCase))
+            {
+                hashAlgorithm = HashAlgorithmName.SHA1;
+            }
+            else if (decodedSigAlg.Equals("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512", StringComparison.OrdinalIgnoreCase))
+            {
+                hashAlgorithm = HashAlgorithmName.SHA512;
+            }
+            else
+            {
+                _logger.LogWarning("SAMLRequest SigAlg '{sigAlg}' is not supported. Supported algorithms: rsa-sha256, rsa-sha1, rsa-sha512", decodedSigAlg);
                 return false;
             }
 
@@ -151,12 +171,11 @@ public class SAMLService : ISAMLService
 
             // Try to get metadata from cache first
             string metadataXml = null;
-            string cacheKey = "FederatorMetadata";
             bool fetchedFromHttp = false;
 
             if (_cache != null)
             {
-                var metadataXmlFromCache = await _cache.GetStringAsync(cacheKey);
+                var metadataXmlFromCache = await _cache.GetStringAsync(FEDERATOR_METADATA_CACHE_KEY);
                 if (!string.IsNullOrWhiteSpace(metadataXmlFromCache))
                 {
                     _logger.LogDebug("Federator metadata retrieved from cache");
@@ -199,11 +218,11 @@ public class SAMLService : ISAMLService
             {
                 var options = new DistributedCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(120),
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_federatorRequestValidationOptions.MetadataCacheAbsoluteExpirationInMins),
                     SlidingExpiration = null
                 };
                 _logger.LogDebug("Storing Federator metadata in cache");
-                await _cache.SetStringAsync(cacheKey, metadataXml, options);
+                await _cache.SetStringAsync(FEDERATOR_METADATA_CACHE_KEY, metadataXml, options);
             }
 
             // Extract certificates from metadata
@@ -229,7 +248,7 @@ public class SAMLService : ISAMLService
             {
                 using (RSA rsa = cert.GetRSAPublicKey())
                 {
-                    if (rsa != null && rsa.VerifyData(bytesToVerify, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
+                    if (rsa != null && rsa.VerifyData(bytesToVerify, signatureBytes, hashAlgorithm, RSASignaturePadding.Pkcs1))
                     {
                         _logger.LogDebug("SAMLRequest signature validated successfully with certificate: {subject}", cert.Subject);
                         return true;

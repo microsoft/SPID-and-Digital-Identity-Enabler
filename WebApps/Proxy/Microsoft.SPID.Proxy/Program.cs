@@ -68,6 +68,7 @@ builder.Services.Configure<LogAccessOptions>(options => {
 builder.Services.Configure<SPIDOptions>(builder.Configuration.GetSection("spid"));
 builder.Services.Configure<CIEOptions>(builder.Configuration.GetSection("cie"));
 builder.Services.Configure<TechnicalChecksOptions>(builder.Configuration.GetSection("TechnicalChecks"));
+builder.Services.Configure<FederatorRequestValidationOptions>(builder.Configuration.GetSection("FederatorRequestValidation"));
 builder.Services.Configure<EventLogSettings>(builder.Configuration.GetSection("Logging:EventLog:Settings"));
 builder.Services.Configure<LoggingOptions>(builder.Configuration.GetSection("SPIDProxyLogging"));
 builder.Services.Configure<OptionalResponseAlterationOptions>(builder.Configuration.GetSection("OptionalResponseAlteration"));

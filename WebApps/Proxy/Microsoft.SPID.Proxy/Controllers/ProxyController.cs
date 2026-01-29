@@ -18,6 +18,7 @@ public class ProxyController : Controller
 	private readonly ISAMLService _samlService;
 	private readonly FederatorOptions _federatorOptions;
 	private readonly TechnicalChecksOptions _technicalChecksOptions;
+	private readonly FederatorRequestValidationOptions _federatorRequestValidationOptions;
 	private readonly LoggingOptions _loggingOptions;
 
 	public ProxyController(ILogger<ProxyController> logger,
@@ -27,6 +28,7 @@ public class ProxyController : Controller
 		ISAMLService samlService,
 		IOptions<FederatorOptions> federatorOptions,
 		IOptions<TechnicalChecksOptions> technicalChecksOptions,
+		IOptions<FederatorRequestValidationOptions> federatorRequestValidationOptions,
 		IOptions<LoggingOptions> loggingOptions)
 	{
 		_logger = logger;
@@ -36,6 +38,7 @@ public class ProxyController : Controller
 		_samlService = samlService;
 		_federatorOptions = federatorOptions.Value;
 		_technicalChecksOptions = technicalChecksOptions.Value;
+		_federatorRequestValidationOptions = federatorRequestValidationOptions.Value;
 		_loggingOptions = loggingOptions.Value;
 	}
 
@@ -74,7 +77,7 @@ public class ProxyController : Controller
 			}
 
 			// Validate SAMLRequest signature from Federator
-			if (!_technicalChecksOptions.SkipSignaturesValidation)
+			if (!_federatorRequestValidationOptions.SkipSAMLRequestSignatureValidation)
 			{
 				try
 				{
