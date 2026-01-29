@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 using System.Collections.Specialized;
+using System.Xml;
 
 namespace Microsoft.SPID.Proxy.Services;
 
 public interface ISPIDService
 {
-	int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
+	int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, XmlDocument requestAsXml);
 	int GetCIEAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString);
 
 	int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie);

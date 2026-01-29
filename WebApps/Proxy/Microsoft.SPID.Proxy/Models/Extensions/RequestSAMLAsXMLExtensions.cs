@@ -152,10 +152,37 @@ public static class RequestSAMLAsXMLExtensions
 	public static XmlDocument AddExtensionsAndPurposeIfNotPresent(this XmlDocument samlRequest,
 		XmlNamespaceManager nameSpaceMgr,
 		string samlpProtocolNamespace,
-		string purposeValue)
+		string purposeValue,
+		string extensionsElementName,
+		string purposeElementName)
 	{
-		XmlNodeList extensionElements = samlRequest.GetElementsByTagName("Extensions", "*");
-		if (extensionElements.Count == 0 || samlRequest.GetElementsByTagName("Purpose", "*").Count == 0) // Ideally to check subtree only
+		// Search for Extensions element using the same logic as GetSpidACSFromExtensions
+		XmlNodeList extensionElements;
+		if (extensionsElementName.Contains(":"))
+		{
+			// Search with the full prefixed name
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName);
+		}
+		else
+		{
+			// Search only by local name, regardless of namespace
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName, "*");
+		}
+		
+		// Search for Purpose element using the same logic
+		XmlNodeList purposeElements;
+		if (purposeElementName.Contains(":"))
+		{
+			// Search with the full prefixed name
+			purposeElements = samlRequest.GetElementsByTagName(purposeElementName);
+		}
+		else
+		{
+			// Search only by local name, regardless of namespace
+			purposeElements = samlRequest.GetElementsByTagName(purposeElementName, "*");
+		}
+		
+		if (extensionElements.Count == 0 || purposeElements.Count == 0) // Ideally to check subtree only
 		{
 			XmlElement rootEl = samlRequest.DocumentElement;
 			// Add the Spid Extension namespace at the current level
@@ -178,5 +205,58 @@ public static class RequestSAMLAsXMLExtensions
 		}
 
 		return samlRequest;
+	}
+
+	public static string GetSpidACSFromExtensions(this XmlDocument samlRequest, 
+		string extensionsElementName, 
+		string spidACSElementName)
+	{
+		if (samlRequest == null || samlRequest.DocumentElement == null)
+		{
+			return null;
+		}
+
+		// If the element name is prefixed, search with prefix; otherwise search only by local name
+		XmlNodeList extensionElements;
+		if (extensionsElementName.Contains(":"))
+		{
+			// Search with the full prefixed name
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName);
+		}
+		else
+		{
+			// Search only by local name, regardless of namespace
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName, "*");
+		}
+		
+		if (extensionElements == null || extensionElements.Count == 0)
+		{
+			return null;
+		}
+
+		// Look for spidACS element in the first Extensions element
+		XmlElement extensionsElement = extensionElements[0] as XmlElement;
+		if (extensionsElement != null)
+		{
+			// If the element name is prefixed, search with prefix; otherwise search only by local name
+			XmlNodeList spidACSElements;
+			if (spidACSElementName.Contains(":"))
+			{
+				// Search with the full prefixed name
+				spidACSElements = extensionsElement.GetElementsByTagName(spidACSElementName);
+			}
+			else
+			{
+				// Search only by local name, regardless of namespace
+				spidACSElements = extensionsElement.GetElementsByTagName(spidACSElementName, "*");
+			}
+			
+			if (spidACSElements != null && spidACSElements.Count > 0)
+			{
+				return spidACSElements[0].InnerText?.Trim();
+			}
+		}
+
+		return null;
 	}
 }
