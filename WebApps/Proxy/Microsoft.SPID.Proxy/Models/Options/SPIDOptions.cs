@@ -18,4 +18,7 @@ public class SPIDOptions
 
     public string ComparisonQueryStringParamName { get; set; }
     public bool DisableSpidLevelFromReferer { get; set; }
+	
+	public string ExtensionsElementName { get; set; } = "samlp:Extensions";
+	public string PurposeElementName { get; set; } = "spid:Purpose";
 }

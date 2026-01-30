@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using System.Collections.Specialized;
+using System.Xml;
 
 namespace Microsoft.SPID.Proxy.Services.Implementations;
 
@@ -148,15 +149,63 @@ public class SPIDService : ISPIDService
 		return true;
 	}
 
-	public int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString)
+	private bool IsValidSpidACSFromExtensions(string spidACSValue, out int parsedValue)
+	{
+		parsedValue = 0;
+		
+		if (string.IsNullOrWhiteSpace(spidACSValue))
+		{
+			return false;
+		}
+
+		if (!_attributeConsumingServiceOptions.ValidACS.Contains(spidACSValue))
+		{
+			_logger.LogDebug("AttributeConsumingServiceIndex from SAMLRequest Extensions is not valid. Found: {foundValue}, Expecting one of: [{expectedValues}]",
+				spidACSValue, string.Join(",", _attributeConsumingServiceOptions.ValidACS));
+			return false;
+		}
+
+		if (!int.TryParse(spidACSValue, out parsedValue))
+		{
+			_logger.LogDebug("AttributeConsumingServiceIndex from SAMLRequest Extensions could not be parsed as integer: {foundValue}", spidACSValue);
+			return false;
+		}
+
+		return true;
+	}
+
+	public int GetSPIDAttributeConsumigServiceValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, XmlDocument requestAsXml)
 	{
 		var ACSValue = _attributeConsumingServiceOptions.AttributeConsumingServiceDefaultValue;
+		
+		string paramName = _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName;
+
+		// First, try to get spidACS from SAMLRequest Extensions (highest priority)
+		if (requestAsXml != null)
+		{
+			try
+			{
+				var spidACSFromExtensions = requestAsXml.GetSpidACSFromExtensions(
+					_spidOptions.ExtensionsElementName,
+					_attributeConsumingServiceOptions.SpidACSElementName);
+
+				if (IsValidSpidACSFromExtensions(spidACSFromExtensions, out int parsedValue))
+				{
+					_logger.LogDebug("Using AttributeConsumingServiceIndex from SAMLRequest Extensions: {acsValue}", spidACSFromExtensions);
+					return parsedValue;
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning(ex, "Error extracting spidACS from SAMLRequest Extensions, falling back to other methods");
+			}
+		}
+
+		// Check if referer-based extraction is disabled
 		if (_attributeConsumingServiceOptions.DisableACSFromReferer)
 		{
 			return ACSValue;
 		}
-
-		string paramName = _attributeConsumingServiceOptions.AttrConsServIndexQueryStringParamName;
 
 		//check for ACS in referer first, then relaystate, then wctx. If none is found, use default
 		if (IsSPIDACSValid(refererQueryString, "REFERER"))

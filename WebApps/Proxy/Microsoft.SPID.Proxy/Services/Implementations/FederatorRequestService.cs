@@ -135,7 +135,7 @@ public class FederatorRequestService : IFederatorRequestService
             var attributeConsumingServiceIndex = federatorRequest.GetAttributeConsumingService(
                 _spidService.GetCIEAttributeConsumigServiceValue(refererQueryString,relayQueryString,wctxQueryString),
                 _attributeConsumingServiceOptions.EIDASAttributeConsumingService,
-                _spidService.GetSPIDAttributeConsumigServiceValue(refererQueryString, relayQueryString, wctxQueryString)
+                _spidService.GetSPIDAttributeConsumigServiceValue(refererQueryString, relayQueryString, wctxQueryString, requestAsXml)
             );
 
             requestAsXml.SetAttributeConsumingService(attributeConsumingServiceIndex);
@@ -177,7 +177,8 @@ public class FederatorRequestService : IFederatorRequestService
 
             if (!string.IsNullOrWhiteSpace(purposeValue))
             {
-                requestAsXml.AddExtensionsAndPurposeIfNotPresent(nameSpaceMgr, samlpProtocolNamespace, purposeValue);
+                requestAsXml.AddExtensionsAndPurposeIfNotPresent(nameSpaceMgr, samlpProtocolNamespace, purposeValue, 
+                    _spidOptions.ExtensionsElementName, _spidOptions.PurposeElementName);
             }
 
             return requestAsXml;
