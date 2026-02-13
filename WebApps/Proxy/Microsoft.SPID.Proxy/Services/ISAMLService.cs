@@ -20,4 +20,6 @@ public interface ISAMLService
     NameValueCollection GetWCTXQueryString(NameValueCollection refererQueryString);
 
     Task<string> GetSignature(FederatorRequest federatorRequest, string samlRequest, string sigAlg, string relayState);
+
+    Task<bool> ValidateFederatorRequestSignature(FederatorRequest federatorRequest);
 }
