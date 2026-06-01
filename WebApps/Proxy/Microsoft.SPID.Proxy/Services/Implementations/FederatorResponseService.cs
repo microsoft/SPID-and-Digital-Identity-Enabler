@@ -256,8 +256,24 @@ public class FederatorResponseService : IFederatorResponseService
 
 	public void ApplyOptionalResponseAlteration(XmlDocument doc)
 	{
-		if (!_optionalResponseAlterationOptions.AlterDateOfBirth) return;
+		if (_optionalResponseAlterationOptions.AlterDateOfBirth)
+		{
+			ApplyDateOfBirthAlteration(doc);
+		}
 
+		if (_optionalResponseAlterationOptions.AddSAMLResponseIDAttribute)
+		{
+			ApplySAMLResponseIDAttributeAlteration(doc);
+		}
+
+		if (_optionalResponseAlterationOptions.AddAuthnContextClassRefAttribute)
+		{
+			ApplyAuthnContextClassRefAttributeAlteration(doc);
+		}
+	}
+
+	private void ApplyDateOfBirthAlteration(XmlDocument doc)
+	{
 		var dateOfBirthNode = FindDateOfBirthNode(doc);
 		if (dateOfBirthNode == null)
 		{
@@ -273,6 +289,121 @@ public class FederatorResponseService : IFederatorResponseService
 		}
 
 		SetTypeAttribute(doc, attributeValueNode);
+	}
+
+	private void ApplySAMLResponseIDAttributeAlteration(XmlDocument doc)
+	{
+		var responseIdAttr = doc.DocumentElement?.Attributes["ID"];
+		if (responseIdAttr == null || string.IsNullOrWhiteSpace(responseIdAttr.Value))
+		{
+			_logger.LogDebug("SAML Response ID not found; skipping SAMLResponseID attribute addition.");
+			return;
+		}
+
+		var attributeName = _optionalResponseAlterationOptions.SAMLResponseIDAttributeName;
+		if (AddSamlAttribute(doc, attributeName, responseIdAttr.Value, _optionalResponseAlterationOptions.SAMLResponseIDAttributeXsiType))
+		{
+			_logger.LogInformation(LoggingEvents.ADDED_SAMLRESPONSEID_ATTRIBUTE,
+				"Added SAML attribute {attributeName} with the SAML Response ID value.", attributeName);
+		}
+	}
+
+	private void ApplyAuthnContextClassRefAttributeAlteration(XmlDocument doc)
+	{
+		var authnContextClassRefNode = doc.GetElementsByTagName("AuthnContextClassRef", "*").Cast<XmlNode>().FirstOrDefault();
+		if (authnContextClassRefNode == null || string.IsNullOrWhiteSpace(authnContextClassRefNode.InnerText))
+		{
+			_logger.LogDebug("AuthnContextClassRef not found; skipping AuthnContextClassRef attribute addition.");
+			return;
+		}
+
+		var attributeName = _optionalResponseAlterationOptions.AuthnContextClassRefAttributeName;
+		if (AddSamlAttribute(doc, attributeName, authnContextClassRefNode.InnerText, _optionalResponseAlterationOptions.AuthnContextClassRefAttributeXsiType))
+		{
+			_logger.LogInformation(LoggingEvents.ADDED_AUTHNCONTEXTCLASSREF_ATTRIBUTE,
+				"Added SAML attribute {attributeName} with the AuthnContextClassRef value.", attributeName);
+		}
+	}
+
+	private bool AddSamlAttribute(XmlDocument doc, string attributeName, string attributeValue, string xsiType)
+	{
+		var attributeStatement = doc.GetElementsByTagName("AttributeStatement", "*").Cast<XmlNode>().FirstOrDefault();
+		if (attributeStatement == null)
+		{
+			_logger.LogDebug("AttributeStatement not found; cannot add SAML attribute {attributeName}.", attributeName);
+			return false;
+		}
+
+		// Use an existing saml:Attribute as a template so that the new attribute uses the same
+		// element prefix, namespace URI and attribute structure already present in the SAML Response.
+		var existingAttribute = attributeStatement.ChildNodes.Cast<XmlNode>()
+			.FirstOrDefault(n => n.NodeType == XmlNodeType.Element && n.LocalName == "Attribute");
+
+		if (existingAttribute == null)
+		{
+			_logger.LogDebug("No existing saml:Attribute found to use as template; cannot add SAML attribute {attributeName}.", attributeName);
+			return false;
+		}
+
+		// Clone the template attribute so we preserve every aspect of its shape
+		// (prefix, namespace declarations, NameFormat attribute, AttributeValue prefix, etc.).
+		var attributeElement = (XmlElement)existingAttribute.CloneNode(true);
+
+		// Replace the Name attribute value.
+		var nameAttr = attributeElement.Attributes["Name"];
+		if (nameAttr == null)
+		{
+			nameAttr = doc.CreateAttribute("Name");
+			attributeElement.Attributes.Append(nameAttr);
+		}
+		nameAttr.Value = attributeName;
+
+		// Overwrite FriendlyName as well if the template carried one, so the cloned
+		// attribute doesn't keep the template's friendly name.
+		var friendlyNameAttr = attributeElement.Attributes["FriendlyName"];
+		if (friendlyNameAttr != null)
+		{
+			friendlyNameAttr.Value = attributeName;
+		}
+
+		var attributeValueElement = attributeElement.ChildNodes.Cast<XmlNode>()
+			.FirstOrDefault(n => n.NodeType == XmlNodeType.Element && n.LocalName == "AttributeValue") as XmlElement;
+
+		if (attributeValueElement == null)
+		{
+			_logger.LogDebug("Template saml:Attribute has no AttributeValue child; cannot add SAML attribute {attributeName}.", attributeName);
+			return false;
+		}
+
+		// Remove any additional AttributeValue elements that came from the template so the
+		// cloned attribute ends up with exactly one AttributeValue holding the new value.
+		var extraAttributeValues = attributeElement.ChildNodes.Cast<XmlNode>()
+			.Where(n => n.NodeType == XmlNodeType.Element && n.LocalName == "AttributeValue" && !ReferenceEquals(n, attributeValueElement))
+			.ToList();
+		foreach (var extra in extraAttributeValues)
+		{
+			attributeElement.RemoveChild(extra);
+		}
+
+		// Replace inner text/children with the new value.
+		attributeValueElement.RemoveAll();
+		attributeValueElement.InnerText = attributeValue;
+
+		// Only set xsi:type if the template AttributeValue already had one, using the value supplied by the caller.
+		var existingTemplateValue = existingAttribute.ChildNodes.Cast<XmlNode>()
+			.FirstOrDefault(n => n.NodeType == XmlNodeType.Element && n.LocalName == "AttributeValue");
+		var templateTypeAttr = existingTemplateValue?.Attributes?.Cast<XmlAttribute>()
+			.FirstOrDefault(a => a.LocalName == "type" && a.NamespaceURI == "http://www.w3.org/2001/XMLSchema-instance");
+
+		if (templateTypeAttr != null && !string.IsNullOrWhiteSpace(xsiType))
+		{
+			var typeAttr = doc.CreateAttribute(templateTypeAttr.Prefix, "type", templateTypeAttr.NamespaceURI);
+			typeAttr.Value = xsiType;
+			attributeValueElement.Attributes.Append(typeAttr);
+		}
+
+		attributeStatement.AppendChild(attributeElement);
+		return true;
 	}
 
 	private XmlNode FindDateOfBirthNode(XmlDocument doc)
