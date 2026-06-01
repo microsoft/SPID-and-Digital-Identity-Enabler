@@ -375,6 +375,16 @@ public class FederatorResponseService : IFederatorResponseService
 			return false;
 		}
 
+		// Remove any additional AttributeValue elements that came from the template so the
+		// cloned attribute ends up with exactly one AttributeValue holding the new value.
+		var extraAttributeValues = attributeElement.ChildNodes.Cast<XmlNode>()
+			.Where(n => n.NodeType == XmlNodeType.Element && n.LocalName == "AttributeValue" && !ReferenceEquals(n, attributeValueElement))
+			.ToList();
+		foreach (var extra in extraAttributeValues)
+		{
+			attributeElement.RemoveChild(extra);
+		}
+
 		// Replace inner text/children with the new value.
 		attributeValueElement.RemoveAll();
 		attributeValueElement.InnerText = attributeValue;
