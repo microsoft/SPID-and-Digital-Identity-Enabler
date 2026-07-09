@@ -147,7 +147,7 @@ public class FederatorRequestService : IFederatorRequestService
             string entityId = GetNewEntityId(federatorRequest);
             requestAsXml.ChangeIssuer(entityId);
 
-            var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString, federatorRequest.IsCIE());
+            var spidL = _spidService.GetSPIDLValue(refererQueryString, relayQueryString, wctxQueryString, federatorRequest.IsCIE(), requestAsXml);
             var comparison = _spidService.GetComparisonValue(refererQueryString, relayQueryString, wctxQueryString, federatorRequest.IsCIE());
             
             //If no RequestedAuthnContext is already present, add it
