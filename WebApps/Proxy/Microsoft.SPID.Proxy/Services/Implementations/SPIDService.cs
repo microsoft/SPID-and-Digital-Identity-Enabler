@@ -267,9 +267,32 @@ public class SPIDService : ISPIDService
 	}
 
 
-	public int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie)
+	public int GetSPIDLValue(NameValueCollection refererQueryString, NameValueCollection relayQueryString, NameValueCollection wctxQueryString, bool isCie, XmlDocument requestAsXml = null)
 	{
 		var spidL = isCie ? _cieOptions.DefaultSPIDL : _spidOptions.DefaultSPIDL;
+
+		// First, try to get spidL from SAMLRequest Extensions (highest priority)
+		if (requestAsXml != null)
+		{
+			try
+			{
+				var spidLFromExtensions = requestAsXml.GetSpidLFromExtensions(
+					_spidOptions.ExtensionsElementName,
+					_spidOptions.SpidLElementName);
+
+				if (!string.IsNullOrWhiteSpace(spidLFromExtensions)
+					&& int.TryParse(spidLFromExtensions, out int parsedValue)
+					&& _spidOptions.ValidSPIDL.Contains(parsedValue))
+				{
+					_logger.LogDebug("Using spidL from SAMLRequest Extensions: {spidLValue}", parsedValue);
+					return parsedValue;
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning(ex, "Error extracting spidL from SAMLRequest Extensions, falling back to other methods");
+			}
+		}
 
 		if(_spidOptions.DisableSpidLevelFromReferer)
 		{
