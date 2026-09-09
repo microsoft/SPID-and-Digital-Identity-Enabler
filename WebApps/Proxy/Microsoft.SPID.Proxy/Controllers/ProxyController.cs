@@ -18,6 +18,7 @@ public class ProxyController : Controller
 	private readonly ISAMLService _samlService;
 	private readonly FederatorOptions _federatorOptions;
 	private readonly TechnicalChecksOptions _technicalChecksOptions;
+	private readonly FederatorRequestValidationOptions _federatorRequestValidationOptions;
 	private readonly LoggingOptions _loggingOptions;
 
 	public ProxyController(ILogger<ProxyController> logger,
@@ -27,6 +28,7 @@ public class ProxyController : Controller
 		ISAMLService samlService,
 		IOptions<FederatorOptions> federatorOptions,
 		IOptions<TechnicalChecksOptions> technicalChecksOptions,
+		IOptions<FederatorRequestValidationOptions> federatorRequestValidationOptions,
 		IOptions<LoggingOptions> loggingOptions)
 	{
 		_logger = logger;
@@ -36,6 +38,7 @@ public class ProxyController : Controller
 		_samlService = samlService;
 		_federatorOptions = federatorOptions.Value;
 		_technicalChecksOptions = technicalChecksOptions.Value;
+		_federatorRequestValidationOptions = federatorRequestValidationOptions.Value;
 		_loggingOptions = loggingOptions.Value;
 	}
 
@@ -71,6 +74,25 @@ public class ProxyController : Controller
 			{
 				_logger.LogError(LoggingEvents.ERROR_DECODE_SAML_REQUEST, e, "Unable to decode SAMLRequest.");
 				return BadRequest();
+			}
+
+			// Validate SAMLRequest signature from Federator
+			if (!_federatorRequestValidationOptions.SkipSAMLRequestSignatureValidation)
+			{
+				try
+				{
+					if (!await _samlService.ValidateFederatorRequestSignature(request))
+					{
+						_logger.LogError(LoggingEvents.ERROR_INVALID_SAML_REQUEST_SIGNATURE, "Invalid SAMLRequest signature from Federator");
+						return BadRequest();
+					}
+					_logger.LogInformation(LoggingEvents.SAML_REQUEST_SIGNATURE_VALIDATED, "SAMLRequest signature validated");
+				}
+				catch (InvalidOperationException ex)
+				{
+					_logger.LogError(ex, "Configuration error during SAMLRequest signature validation");
+					throw;
+				}
 			}
 
 			var ID = requestAsXml.GetRequestID();
