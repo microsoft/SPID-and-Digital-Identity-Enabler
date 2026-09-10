@@ -17,6 +17,8 @@ namespace Microsoft.SPID.Proxy.Models
 		public const int PROXY_INDEX_INVOKED = 5006;
 		public const int INCOMING_SAML_RESPONSE_DECODED = 5007;
 		public const int ALTERED_DATEOFBIRTH_TYPE = 5008;
+		public const int ADDED_SAMLRESPONSEID_ATTRIBUTE = 5009;
+		public const int ADDED_AUTHNCONTEXTCLASSREF_ATTRIBUTE = 5010;
 
 
 
