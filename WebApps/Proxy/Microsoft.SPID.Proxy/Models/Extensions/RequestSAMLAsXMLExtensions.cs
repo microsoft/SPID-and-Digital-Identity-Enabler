@@ -207,6 +207,54 @@ public static class RequestSAMLAsXMLExtensions
 		return samlRequest;
 	}
 
+	public static string GetSpidLFromExtensions(this XmlDocument samlRequest,
+		string extensionsElementName,
+		string spidLElementName)
+	{
+		if (samlRequest == null || samlRequest.DocumentElement == null)
+		{
+			return null;
+		}
+
+		// If the element name is prefixed, search with prefix; otherwise search only by local name
+		XmlNodeList extensionElements;
+		if (extensionsElementName.Contains(":"))
+		{
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName);
+		}
+		else
+		{
+			extensionElements = samlRequest.GetElementsByTagName(extensionsElementName, "*");
+		}
+
+		if (extensionElements == null || extensionElements.Count == 0)
+		{
+			return null;
+		}
+
+		// Look for spidL element in the first Extensions element
+		XmlElement extensionsElement = extensionElements[0] as XmlElement;
+		if (extensionsElement != null)
+		{
+			XmlNodeList spidLElements;
+			if (spidLElementName.Contains(":"))
+			{
+				spidLElements = extensionsElement.GetElementsByTagName(spidLElementName);
+			}
+			else
+			{
+				spidLElements = extensionsElement.GetElementsByTagName(spidLElementName, "*");
+			}
+
+			if (spidLElements != null && spidLElements.Count > 0)
+			{
+				return spidLElements[0].InnerText?.Trim();
+			}
+		}
+
+		return null;
+	}
+
 	public static string GetSpidACSFromExtensions(this XmlDocument samlRequest, 
 		string extensionsElementName, 
 		string spidACSElementName)
